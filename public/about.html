@@ -522,8 +522,9 @@
       }
 
       .values-grid {
-        grid-template-columns: 1fr;
-       
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
       }
 
       .value-card {
@@ -1000,7 +1001,6 @@
 
       @media (max-width: 1024px) {
         .story-section,
-        .values-grid,
         .team-grid,
         footer {
           grid-template-columns: 1fr;
