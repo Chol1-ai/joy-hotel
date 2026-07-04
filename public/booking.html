@@ -578,7 +578,8 @@
 
       .field input,
       .field select,
-      .field textarea {
+      .field textarea,
+      .field .room-options {
         width: 100%;
         padding: 13px 15px;
         border: 1px solid var(--border);
@@ -593,6 +594,37 @@
       .field textarea {
         resize: vertical;
         min-height: 90px;
+      }
+
+      .field .room-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fdfbf8;
+      }
+
+      .field .room-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text);
+        cursor: pointer;
+        padding: 6px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .field .room-option:hover {
+        background: rgba(181, 139, 58, 0.08);
+      }
+
+      .field .room-option input {
+        width: auto;
+        margin: 0;
       }
 
       .field input:focus,
@@ -1247,6 +1279,11 @@
                 </div>
               </div>
 
+              <div class="field">
+                <label>Preferred Room Types *</label>
+                <div class="room-options" id="roomOptions"></div>
+              </div>
+
               <div class="form-row">
                 <div class="field">
                   <label for="checkIn">Check-in Date *</label>
@@ -1478,18 +1515,19 @@
       }
 
       let ROOMS = [];
-      let selectedRoom = null;
+      let selectedRooms = [];
 
       const roomsGrid = document.getElementById("roomsGrid");
       const summaryContent = document.getElementById("summaryContent");
       const checkInInput = document.getElementById("checkIn");
       const checkOutInput = document.getElementById("checkOut");
       const guestsSelect = document.getElementById("guests");
+      const roomOptions = document.getElementById("roomOptions");
 
       function renderRooms() {
         roomsGrid.innerHTML = ROOMS.map(
           (room) => `
-        <div class="room-card" data-id="${room.id}">
+        <div class="room-card ${selectedRooms.includes(room.name) ? "selected" : ""}" data-id="${room.id}">
             <div class="room-img"><img src="${room.image}" alt="${room.name}"></div>
             <div class="room-body">
                 <h3>${room.name}</h3>
@@ -1503,14 +1541,39 @@
     `,
         ).join("");
 
+        roomOptions.innerHTML = ROOMS.map(
+          (room) => `
+          <label class="room-option">
+            <input type="checkbox" value="${room.name}" ${selectedRooms.includes(room.name) ? "checked" : ""} />
+            <span>${room.name}</span>
+          </label>
+        `,
+        ).join("");
+
+        roomOptions
+          .querySelectorAll("input[type='checkbox']")
+          .forEach((checkbox) => {
+            checkbox.addEventListener("change", () => {
+              const value = checkbox.value;
+              selectedRooms = checkbox.checked
+                ? [...new Set([...selectedRooms, value])]
+                : selectedRooms.filter((item) => item !== value);
+              updateSummary();
+              renderRooms();
+            });
+          });
+
         document.querySelectorAll(".room-card").forEach((card) => {
           card.addEventListener("click", () => {
-            document
-              .querySelectorAll(".room-card")
-              .forEach((c) => c.classList.remove("selected"));
-            card.classList.add("selected");
-            selectedRoom = ROOMS.find((r) => r.id === card.dataset.id);
+            const roomName = ROOMS.find((r) => r.id === card.dataset.id)?.name;
+            if (!roomName) return;
+
+            card.classList.toggle("selected");
+            selectedRooms = card.classList.contains("selected")
+              ? [...new Set([...selectedRooms, roomName])]
+              : selectedRooms.filter((item) => item !== roomName);
             updateSummary();
+            renderRooms();
           });
         });
       }
@@ -1537,15 +1600,23 @@
         const inVal = checkInInput.value;
         const outVal = checkOutInput.value;
 
-        if (!selectedRoom) {
+        if (!selectedRooms.length) {
           summaryContent.innerHTML =
-            '<p class="summary-empty">Select a room and dates to see your total.</p>';
+            '<p class="summary-empty">Select one or more rooms and dates to see your total.</p>';
           return;
         }
 
+        const selectedRoomDetails = ROOMS.filter((room) =>
+          selectedRooms.includes(room.name),
+        );
+        const totalPrice = selectedRoomDetails.reduce(
+          (sum, room) => sum + room.pricePerNight,
+          0,
+        );
+
         let html = `
-        <div class="summary-row"><span>Room</span><span>${selectedRoom.name}</span></div>
-        <div class="summary-row"><span>Rate</span><span>${formatCurrency(selectedRoom.pricePerNight)} / night</span></div>
+        <div class="summary-row"><span>Rooms</span><span>${selectedRoomDetails.map((room) => room.name).join(", ")}</span></div>
+        <div class="summary-row"><span>Rate</span><span>${formatCurrency(selectedRoomDetails[0].pricePerNight)} / night each</span></div>
     `;
 
         if (inVal && outVal) {
@@ -1558,7 +1629,7 @@
                 <div class="summary-row"><span>Check-in</span><span>${inDate.toDateString()}</span></div>
                 <div class="summary-row"><span>Check-out</span><span>${outDate.toDateString()}</span></div>
                 <div class="summary-row"><span>Nights</span><span>${nights}</span></div>
-                <div class="summary-total"><span>Total</span><span>${formatCurrency(nights * selectedRoom.pricePerNight)}</span></div>
+                <div class="summary-total"><span>Total</span><span>${formatCurrency(nights * totalPrice)}</span></div>
             `;
           } else {
             html += `<p class="summary-empty">Check-out must be after check-in.</p>`;
@@ -1623,10 +1694,10 @@
         e.preventDefault();
         formMsg.className = "form-msg";
 
-        if (!selectedRoom) {
+        if (!selectedRooms.length) {
           formMsg.classList.add("show", "error");
           formMsg.innerHTML =
-            '<i class="fa-solid fa-circle-exclamation"></i> Please select a room above.';
+            '<i class="fa-solid fa-circle-exclamation"></i> Please select one or more room types above.';
           return;
         }
 
@@ -1634,7 +1705,7 @@
           fullName: document.getElementById("fullName").value.trim(),
           email: document.getElementById("email").value.trim(),
           phone: document.getElementById("phone").value.trim(),
-          roomType: selectedRoom.name,
+          roomType: selectedRooms.join(", "),
           checkIn: checkInInput.value,
           checkOut: checkOutInput.value,
           guests: guestsSelect.value,

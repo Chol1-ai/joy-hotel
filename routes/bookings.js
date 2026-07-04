@@ -79,11 +79,18 @@ router.post("/", async (req, res) => {
       specialRequests,
     } = req.body;
 
+    const selectedRoomNames = Array.isArray(roomType)
+      ? roomType
+      : String(roomType || "")
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+
     if (
       !fullName ||
       !email ||
       !phone ||
-      !roomType ||
+      !selectedRoomNames.length ||
       !checkIn ||
       !checkOut ||
       !guests
@@ -93,11 +100,12 @@ router.post("/", async (req, res) => {
         .json({ error: "Please fill in all required fields." });
     }
 
-    const room = ROOMS.find((r) => r.name === roomType);
-    if (!room) {
-      return res
-        .status(400)
-        .json({ error: "Please select a valid room type." });
+    const rooms = selectedRoomNames
+      .map((name) => ROOMS.find((r) => r.name === name))
+      .filter(Boolean);
+
+    if (rooms.length !== selectedRoomNames.length) {
+      return res.status(400).json({ error: "Please select valid room types." });
     }
 
     const checkInDate = new Date(checkIn);
@@ -121,12 +129,11 @@ router.post("/", async (req, res) => {
 
     const nights = nightsBetween(checkInDate, checkOutDate);
     const guestCount = Number(guests);
-    if (guestCount > room.maxGuests) {
-      return res
-        .status(400)
-        .json({
-          error: `${room.name} accommodates up to ${room.maxGuests} guests.`,
-        });
+    const maxAllowedGuests = Math.max(...rooms.map((room) => room.maxGuests));
+    if (guestCount > maxAllowedGuests) {
+      return res.status(400).json({
+        error: `The selected rooms accommodate up to ${maxAllowedGuests} guests.`,
+      });
     }
 
     let confirmationCode = generateConfirmationCode();
@@ -135,19 +142,25 @@ router.post("/", async (req, res) => {
       confirmationCode = generateConfirmationCode();
     }
 
+    const totalRoomPrice = rooms.reduce(
+      (sum, room) => sum + room.pricePerNight,
+      0,
+    );
+
     const booking = await Booking.create({
       confirmationCode,
       fullName,
       email,
       phone,
-      roomType,
+      roomType: selectedRoomNames.join(", "),
+      roomTypes: selectedRoomNames,
       checkIn: checkInDate,
       checkOut: checkOutDate,
       guests: guestCount,
       specialRequests: specialRequests || "",
       nights,
-      pricePerNight: room.pricePerNight,
-      totalPrice: nights * room.pricePerNight,
+      pricePerNight: totalRoomPrice,
+      totalPrice: nights * totalRoomPrice,
     });
 
     res.status(201).json({ booking });
@@ -180,11 +193,9 @@ router.get("/lookup", async (req, res) => {
     res.json({ booking });
   } catch (err) {
     console.error("Error looking up booking:", err);
-    res
-      .status(500)
-      .json({
-        error: "Something went wrong while looking up your reservation.",
-      });
+    res.status(500).json({
+      error: "Something went wrong while looking up your reservation.",
+    });
   }
 });
 
@@ -206,11 +217,9 @@ router.patch("/:code/cancel", async (req, res) => {
     res.json({ booking });
   } catch (err) {
     console.error("Error cancelling booking:", err);
-    res
-      .status(500)
-      .json({
-        error: "Something went wrong while cancelling your reservation.",
-      });
+    res.status(500).json({
+      error: "Something went wrong while cancelling your reservation.",
+    });
   }
 });
 
