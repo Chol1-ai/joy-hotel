@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Location - Joy Hotel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --gold:#b58b3a;
+    --dark:#2f241b;
+    --light:#f8f4ef;
+    --border:#ccb58d;
+    --text:#4e4339;
+}
+
+body{
+    background:#f4efe9;
+    font-family:'Montserrat', sans-serif;
+    padding:12px;
+    color:var(--text);
+    scroll-behavior:smooth;
+}
+
+.container{
+    max-width:1180px;
+    margin:auto;
+    background:#fffdfa;
+    border:1px solid var(--border);
+    box-shadow:0 10px 50px rgba(0,0,0,.08);
+}
+
+/* ================= HEADER ================= */
+
+header{
+    height:58px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 35px;
+    background:#faf7f2;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    animation:slideDownHeader 0.6s ease-out;
+}
+
+@keyframes slideDownHeader {
+    from {
+        opacity:0;
+        transform:translateY(-30px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.logo:hover {
+    transform:scale(1.05);
+}
+
+.logo-symbol{
+    position:relative;
+    width:28px;
+    height:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin-top:-4px;
+}
+
+.logo-symbol .crown{
+    color:var(--gold);
+    font-size:10px;
+    line-height:1;
+    margin-bottom:1px;
+    animation:bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.logo-symbol .j{
+    position:relative;
+    font-family:'Cormorant Garamond', serif;
+    font-size:30px;
+    line-height:.8;
+    color:var(--gold);
+    font-weight:700;
+    transition:all 0.3s ease;
+}
+
+.logo:hover .j {
+    text-shadow:0 4px 12px rgba(181, 139, 58, 0.4);
+}
+
+.logo-symbol .j::after{
+    content:'';
+    position:absolute;
+    top:7px;
+    left:9px;
+    width:5px;
+    height:9px;
+    background:#fffdfa;
+    border-radius:10px;
+    opacity:.95;
+}
+
+.logo-text{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    line-height:1;
+}
+
+.logo-text h1{
+    font-family:'Cormorant Garamond', serif;
+    color:var(--gold);
+    font-size:21px;
+    font-weight:600;
+    letter-spacing:.5px;
+    line-height:1;
+    transition:all 0.3s ease;
+}
+
+.logo:hover .logo-text h1 {
+    letter-spacing:1px;
+}
+
+.logo-text span{
+    font-size:6px;
+    letter-spacing:1.7px;
+    color:#98866d;
+    font-weight:600;
+    display:block;
+    text-align:center;
+    margin-left:2px;
+    margin-top:2px;
+}
+
+nav ul{
+    display:flex;
+    gap:32px;
+    list-style:none;
+}
+
+nav a{
+    text-decoration:none;
+    color:#43382d;
+    font-size:12px;
+    font-weight:600;
+    position:relative;
+    letter-spacing: 0.5px;
+    display:inline-block;
+    transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+nav a.active{
+    color: var(--gold);
+}
+
+nav a::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(181, 139, 58, 0.08);
+    border-radius:4px;
+    z-index:-1;
+    transform:scaleX(0);
+    transform-origin:right;
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+nav a:hover::before {
+    transform:scaleX(1);
+    transform-origin:left;
+}
+
+nav a:hover {
+    color: var(--gold);
+    transform: translateY(-2px);
+    text-shadow:0 2px 8px rgba(181, 139, 58, 0.2);
+}
+
+nav a::after {
+    content:'';
+    position:absolute;
+    bottom:-8px;
+    left:50%;
+    width:0;
+    height:2px;
+    background:var(--gold);
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform:translateX(-50%);
+}
+
+nav a:hover::after {
+    width:60%;
+}
+
+.nav-cta{
+    background:var(--gold);
+    color:white !important;
+    padding:9px 18px;
+    border-radius:20px;
+    letter-spacing:0.8px;
+}
+
+.nav-cta::before, .nav-cta::after{ display:none; }
+
+.nav-cta:hover{
+    background:#9f7728;
+    color:white !important;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(181, 139, 58, 0.35);
+    text-shadow:none;
+}
+
+/* ================= HERO BANNER ================= */
+
+.hero-banner{
+    height:380px;
+    background:
+    linear-gradient(135deg, rgba(47, 36, 27, 0.4), rgba(181, 139, 58, 0.2)),
+    url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1400&auto=format&fit=crop');
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero-banner::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:radial-gradient(ellipse at center, rgba(181, 139, 58, 0.15) 0%, transparent 100%);
+    z-index:1;
+}
+
+.banner-content{
+    position:relative;
+    z-index:2;
+    animation:fadeInUp 0.8s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.banner-content h1{
+    font-family:'Cormorant Garamond', serif;
+    font-size:72px;
+    color:white;
+    margin-bottom:15px;
+    text-shadow:0 4px 20px rgba(0,0,0,.3);
+    animation:scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity:0;
+        transform:scale(0.9);
+    }
+    to {
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.banner-content p{
+    font-size:18px;
+    color:rgba(255,255,255,0.95);
+    letter-spacing:1px;
+    animation:fadeInUp 0.8s ease-out 0.5s both;
+}
+
+/* ================= MAP SECTION ================= */
+
+.map-section{
+    padding:60px 50px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:center;
+}
+
+.map-container{
+    height:500px;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 15px 50px rgba(0,0,0,.15);
+    animation:slideInRight 0.8s ease-out 0.3s both;
+    border:2px solid var(--border);
+    position:relative;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity:0;
+        transform:translateX(50px);
+    }
+    to {
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+#map{
+    width:100%;
+    height:100%;
+}
+
+.leaflet-control-attribution{
+    background:rgba(255,255,255,0.95) !important;
+    border:1px solid var(--border) !important;
+}
+
+.leaflet-container{
+    font-family:'Montserrat', sans-serif;
+}
+
+.location-info{
+    animation:slideInLeft 0.8s ease-out 0.3s both;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity:0;
+        transform:translateX(-50px);
+    }
+    to {
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+.location-info h2{
+    font-family:'Cormorant Garamond', serif;
+    font-size:48px;
+    color:var(--dark);
+    margin-bottom:20px;
+}
+
+.info-divider{
+    width:80px;
+    height:3px;
+    background:linear-gradient(90deg, var(--gold) 0%, var(--gold) 50%, transparent 100%);
+    margin-bottom:25px;
+    animation:expandWidth 0.6s ease-out 0.5s both;
+}
+
+@keyframes expandWidth {
+    from {
+        width:0;
+    }
+    to {
+        width:80px;
+    }
+}
+
+.location-info p{
+    font-size:15px;
+    line-height:1.8;
+    margin-bottom:30px;
+    color:#554a3e;
+}
+
+.info-items{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.info-item{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    padding:20px;
+    background:linear-gradient(135deg, rgba(181, 139, 58, 0.05) 0%, rgba(181, 139, 58, 0.02) 100%);
+    border-radius:10px;
+    border-left:4px solid var(--gold);
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation:slideInLeft 0.6s ease-out both;
+}
+
+.info-item:nth-child(1) { animation-delay:0.5s; }
+.info-item:nth-child(2) { animation-delay:0.6s; }
+.info-item:nth-child(3) { animation-delay:0.7s; }
+
+.info-item:hover {
+    background:linear-gradient(135deg, rgba(181, 139, 58, 0.1) 0%, rgba(181, 139, 58, 0.05) 100%);
+    transform:translateX(10px);
+    box-shadow:0 8px 20px rgba(181, 139, 58, 0.1);
+}
+
+.info-item i{
+    font-size:24px;
+    color:var(--gold);
+    width:40px;
+    text-align:center;
+    flex-shrink:0;
+    transition:all 0.3s ease;
+}
+
+.info-item:hover i {
+    transform:scale(1.2) rotate(10deg);
+}
+
+.info-item-content h3{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:5px;
+    color:var(--dark);
+}
+
+.info-item-content p{
+    font-size:14px;
+    margin:0;
+    color:#8f7d68;
+}
+
+.cta-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:40px;
+    animation:fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.btn-primary, .btn-secondary{
+    padding:15px 30px;
+    border:none;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+}
+
+.btn-primary{
+    background:var(--gold);
+    color:white;
+    box-shadow:0 6px 15px rgba(181, 139, 58, 0.3);
+}
+
+.btn-primary::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.2);
+    transition:left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+    left:100%;
+}
+
+.btn-primary:hover{
+    background:#9f7728;
+    transform:translateY(-3px);
+    box-shadow:0 12px 25px rgba(181, 139, 58, 0.4);
+}
+
+.btn-secondary{
+    background:white;
+    color:var(--gold);
+    border:2px solid var(--gold);
+    box-shadow:0 4px 12px rgba(181, 139, 58, 0.1);
+}
+
+.btn-secondary:hover{
+    background:var(--gold);
+    color:white;
+    transform:translateY(-3px);
+    box-shadow:0 12px 25px rgba(181, 139, 58, 0.3);
+}
+
+/* ================= NEARBY ATTRACTIONS ================= */
+
+.attractions-section{
+    padding:60px 50px;
+    background:linear-gradient(135deg, rgba(248, 244, 239, 0.5) 0%, rgba(181, 139, 58, 0.05) 100%);
+}
+
+.section-header{
+    text-align:center;
+    margin-bottom:50px;
+    animation:fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.section-header h2{
+    font-family:'Cormorant Garamond', serif;
+    font-size:48px;
+    color:var(--dark);
+    margin-bottom:15px;
+}
+
+.section-header p{
+    font-size:16px;
+    color:#8f7d68;
+    max-width:500px;
+    margin:auto;
+}
+
+.header-divider{
+    width:100px;
+    height:2px;
+    background:var(--gold);
+    margin:20px auto 0;
+}
+
+.attractions-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:30px;
+}
+
+.attraction-card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation:scaleUp 0.6s ease-out both;
+    cursor:pointer;
+}
+
+.attraction-card:nth-child(1) { animation-delay:0.3s; }
+.attraction-card:nth-child(2) { animation-delay:0.4s; }
+.attraction-card:nth-child(3) { animation-delay:0.5s; }
+
+@keyframes scaleUp {
+    from {
+        opacity:0;
+        transform:scale(0.95);
+    }
+    to {
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.attraction-card:hover {
+    transform:translateY(-15px);
+    box-shadow:0 20px 50px rgba(0,0,0,.15);
+}
+
+.attraction-img{
+    width:100%;
+    height:220px;
+    overflow:hidden;
+    position:relative;
+}
+
+.attraction-img::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(181, 139, 58, 0);
+    transition:all 0.4s ease;
+    z-index:1;
+}
+
+.attraction-card:hover .attraction-img::after {
+    background:rgba(181, 139, 58, 0.15);
+}
+
+.attraction-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform 0.6s ease;
+}
+
+.attraction-card:hover img {
+    transform:scale(1.15);
+}
+
+.attraction-content{
+    padding:30px 25px;
+}
+
+.distance{
+    display:inline-block;
+    background:rgba(181, 139, 58, 0.1);
+    color:var(--gold);
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:12px;
+}
+
+.attraction-content h3{
+    font-family:'Cormorant Garamond', serif;
+    font-size:22px;
+    color:var(--dark);
+    margin-bottom:10px;
+}
+
+.attraction-content p{
+    font-size:14px;
+    color:#8f7d68;
+    line-height:1.6;
+    margin-bottom:15px;
+}
+
+.learn-more{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color:var(--gold);
+    text-decoration:none;
+    font-weight:600;
+    font-size:13px;
+    transition:all 0.3s ease;
+}
+
+.learn-more:hover {
+    gap:12px;
+}
+
+/* ================= TRANSPORTATION ================= */
+
+.transport-section{
+    padding:60px 50px;
+}
+
+.transport-container{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+}
+
+.transport-card{
+    text-align:center;
+    padding:35px 25px;
+    background:linear-gradient(135deg, #fff9f3 0%, #fffdfa 100%);
+    border:2px solid #e8d5c0;
+    border-radius:10px;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation:bounceIn 0.6s ease-out both;
+    cursor:pointer;
+}
+
+.transport-card:nth-child(1) { animation-delay:0.2s; }
+.transport-card:nth-child(2) { animation-delay:0.3s; }
+.transport-card:nth-child(3) { animation-delay:0.4s; }
+.transport-card:nth-child(4) { animation-delay:0.5s; }
+
+@keyframes bounceIn {
+    from {
+        opacity:0;
+        transform:translateY(20px) scale(0.95);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.transport-card:hover {
+    background:linear-gradient(135deg, rgba(181, 139, 58, 0.1) 0%, rgba(181, 139, 58, 0.05) 100%);
+    border-color:var(--gold);
+    transform:translateY(-8px) scale(1.02);
+    box-shadow:0 15px 40px rgba(181, 139, 58, 0.15);
+}
+
+.transport-icon{
+    font-size:48px;
+    color:var(--gold);
+    margin-bottom:15px;
+    display:inline-flex;
+    width:70px;
+    height:70px;
+    align-items:center;
+    justify-content:center;
+    background:rgba(181, 139, 58, 0.08);
+    border-radius:50%;
+    transition:all 0.4s ease;
+}
+
+.transport-card:hover .transport-icon {
+    transform:scale(1.2) rotate(-10deg);
+    background:rgba(181, 139, 58, 0.15);
+}
+
+.transport-card h3{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:12px;
+    color:var(--dark);
+}
+
+.transport-card p{
+    font-size:13px;
+    color:#8f7d68;
+    line-height:1.6;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    border-top:1px solid var(--border);
+    background:linear-gradient(135deg, #faf7f2 0%, #f5f0e8 100%);
+    padding:50px 50px 30px;
+    display:grid;
+    grid-template-columns:1.2fr 1fr 1fr 1fr;
+    gap:40px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* ANIMATED BACKGROUND ELEMENTS */
+footer::before {
+    content:'';
+    position:absolute;
+    top:-50%;
+    right:-10%;
+    width:400px;
+    height:400px;
+    background:radial-gradient(circle, rgba(181, 139, 58, 0.05) 0%, transparent 70%);
+    border-radius:50%;
+    animation:float 8s ease-in-out infinite;
+    z-index:0;
+}
+
+footer::after {
+    content:'';
+    position:absolute;
+    bottom:-30%;
+    left:-5%;
+    width:350px;
+    height:350px;
+    background:radial-gradient(circle, rgba(181, 139, 58, 0.04) 0%, transparent 70%);
+    border-radius:50%;
+    animation:float-reverse 10s ease-in-out infinite;
+    z-index:0;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+}
+
+@keyframes float-reverse {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, 30px); }
+}
+
+/* FOOTER CONTENT POSITIONING */
+footer > div {
+    position:relative;
+    z-index:1;
+}
+
+footer h4{
+    font-family:'Cormorant Garamond', serif;
+    color:#b58b3a;
+    font-size:24px;
+    margin-bottom:20px;
+    font-weight: 600;
+    position:relative;
+    display:inline-block;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+
+/* ANIMATED UNDERLINE FOR FOOTER TITLES */
+footer h4::after {
+    content:'';
+    position:absolute;
+    bottom:-8px;
+    left:0;
+    width:0;
+    height:2px;
+    background:var(--gold);
+    transition:width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+footer h4:hover::after {
+    width:100%;
+}
+
+footer h4:hover {
+    transform:translateX(5px);
+    text-shadow:0 2px 8px rgba(181, 139, 58, 0.2);
+}
+
+footer p,
+footer li{
+    line-height:1.8;
+    list-style:none;
+    font-size:13px;
+    color: #554a3e;
+}
+
+footer ul li {
+    margin-bottom: 8px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* ANIMATED LIST ITEMS */
+footer ul li::before {
+    content:'';
+    position:absolute;
+    left:-100%;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(181, 139, 58, 0.08);
+    border-radius:4px;
+    z-index:-1;
+    transition:left 0.3s ease;
+}
+
+footer ul li:hover::before {
+    left:0;
+}
+
+/* FOOTER LINK STYLES WITH ENHANCED ANIMATIONS */
+footer ul li a {
+    text-decoration: none;
+    color: #554a3e;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: inline-block;
+    position: relative;
+    padding:2px 0;
+}
+
+footer ul li a:hover {
+    color: var(--gold);
+    transform: translateX(12px);
+}
+
+footer ul li a::before {
+    content: '›';
+    position: absolute;
+    left: -18px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--gold);
+    font-weight:700;
+}
+
+footer ul li a:hover::before {
+    opacity: 1;
+    left: -14px;
+}
+
+/* CONTACT ITEMS ANIMATION */
+.contact-item{
+    display:flex;
+    gap:12px;
+    margin-bottom:15px;
+    align-items:flex-start;
+    position:relative;
+    padding:8px;
+    border-radius:6px;
+    transition:all 0.3s ease;
+}
+
+.contact-item:hover {
+    background:rgba(181, 139, 58, 0.06);
+    padding:8px 12px;
+}
+
+.contact-item i{
+    color:var(--gold);
+    margin-top:5px;
+    font-size: 15px;
+    transition:all 0.3s ease;
+    flex-shrink:0;
+    animation:float-icon 2s ease-in-out infinite;
+}
+
+.contact-item:hover i {
+    transform:scale(1.2) rotate(10deg);
+    animation:none;
+}
+
+@keyframes float-icon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.contact-item span {
+    transition:all 0.3s ease;
+}
+
+.contact-item:hover span {
+    color:var(--gold);
+}
+
+/* SOCIALS WITH PULSE ANIMATION */
+.socials{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.socials a{
+    width:36px;
+    height:36px;
+    border:2px solid var(--gold);
+    border-radius:50%;
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position:relative;
+    overflow:hidden;
+}
+
+.socials a::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:var(--gold);
+    z-index:-1;
+    border-radius:50%;
+    transform:scale(0);
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.socials a:hover::before {
+    transform:scale(1);
+}
+
+.socials a:hover {
+    color: white;
+    box-shadow:0 6px 20px rgba(181, 139, 58, 0.4);
+    transform:translateY(-4px);
+}
+
+@media(max-width:1024px){
+    .map-section,
+    .attractions-grid,
+    .transport-container{
+        grid-template-columns:1fr;
+    }
+    
+    .map-container{
+        height:400px;
+    }
+    
+    footer{
+        grid-template-columns:1fr;
+    }
+    
+    .banner-content h1{
+        font-size:48px;
+    }
+}
+
+
+/* ============ MOBILE NAV / HAMBURGER (added) ============ */
+.hamburger{
+    display:none;
+    width:26px;
+    height:20px;
+    flex-direction:column;
+    justify-content:space-between;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    z-index:200;
+}
+.hamburger span{
+    display:block;
+    width:100%;
+    height:2px;
+    background:var(--gold);
+    border-radius:2px;
+    transition:all 0.3s ease;
+}
+.hamburger.active span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+.hamburger.active span:nth-child(2){ opacity:0; }
+.hamburger.active span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
+
+body.nav-open{ overflow:hidden; }
+
+@media(max-width:880px){
+    header{
+        display:grid;
+        grid-template-columns:26px 1fr 26px;
+        align-items:center;
+        column-gap:10px;
+        padding:0 16px;
+    }
+    .hamburger{
+        display:flex;
+        grid-column:1;
+    }
+    .logo{
+        grid-column:2;
+        justify-self:center;
+    }
+    nav{
+        grid-column:1/-1;
+        position:fixed;
+        top:58px;
+        left:0;
+        width:100%;
+        height:calc(100vh - 58px);
+        background:#faf7f2;
+        z-index:99;
+        transform:translateX(-100%);
+        transition:transform .35s ease;
+        overflow-y:auto;
+        border-top:1px solid var(--border);
+        box-shadow:0 12px 24px rgba(0,0,0,.08);
+    }
+    nav.active{
+        transform:translateX(0);
+    }
+    nav ul{
+        flex-direction:column;
+        gap:0 !important;
+        width:100%;
+        padding:10px 0 30px;
+        flex-wrap:nowrap !important;
+    }
+    nav ul li{
+        width:100%;
+        text-align:center;
+    }
+    nav ul li a{
+        display:block;
+        width:100%;
+        padding:16px 20px;
+        font-size:14px;
+    }
+    nav ul li a::after{ display:none; }
+    nav ul li a.nav-cta{
+        display:inline-block;
+        width:calc(100% - 48px);
+        margin:14px 24px 0;
+        padding:12px 18px;
+    }
+}
+
+@media(max-width:480px){
+    body{ padding:6px; }
+    .logo-text h1{ font-size:18px; }
+    .logo-text span{ font-size:5px; }
+    .banner-content h1{ font-size:30px !important; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HEADER -->
+<header>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<a href="./index.html" class="logo">
+        <div class="logo-symbol">
+            <div class="crown">♛</div>
+            <div class="j">J</div>
+        </div>
+        <div class="logo-text">
+            <h1>JOY HOTEL</h1>
+            <span>YOUR PERFECT STAY</span>
+        </div>
+    </a>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="gallery.html">GALLERY</a></li>
+            <li><a href="#" class="active">LOCATION</a></li>
+            <li><a href="./about.html">ABOUT US</a></li>
+            <li><a href="contact.html">CONTACT</a></li>
+            <li><a href="booking.html" class="nav-cta">BOOK NOW</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- HERO BANNER -->
+<section class="hero-banner">
+    <div class="banner-content">
+        <h1>OUR LOCATION</h1>
+        <p>Discover the heart of Kampala's luxury hospitality</p>
+    </div>
+</section>
+
+<!-- MAP SECTION -->
+<section class="map-section">
+    <div class="location-info">
+        <h2>Visit Joy Hotel</h2>
+        <div class="info-divider"></div>
+        <p>Nestled in the vibrant heart of Kampala, Joy Hotel offers the perfect location for both business and leisure travelers. Our strategic position provides easy access to the city's finest attractions, restaurants, and cultural landmarks.</p>
+
+        <div class="info-items">
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="info-item-content">
+                    <h3>Address</h3>
+                    <p>193 Lumumba Avenue, Kampala, Uganda</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <div class="info-item-content">
+                    <h3>Reception Hours</h3>
+                    <p>Open 24/7 for your convenience</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-taxi"></i>
+                <div class="info-item-content">
+                    <h3>Getting Here</h3>
+                    <p>15 mins from Kampala International Airport</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-buttons">
+            <button class="btn-primary">
+                <i class="fas fa-directions"></i>
+                Get Directions
+            </button>
+            <button class="btn-secondary">
+                <i class="fas fa-phone"></i>
+                Call Us
+            </button>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+</section>
+
+<!-- NEARBY ATTRACTIONS -->
+<section class="attractions-section">
+    <div class="section-header">
+        <h2>Nearby Attractions</h2>
+        <p>Explore the vibrant surroundings of our hotel</p>
+        <div class="header-divider"></div>
+    </div>
+
+    <div class="attractions-grid">
+        <div class="attraction-card">
+            <div class="attraction-img">
+                <img src="https://images.unsplash.com/photo-1640532923076-50c867ed2c31?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kasubi Tombs">" alt="Kasubi Tombs">
+            </div>
+            <div class="attraction-content">
+                <span class="distance">2.3 km away</span>
+                <h3>Kasubi Tombs</h3>
+                <p>UNESCO World Heritage Site featuring the burial grounds of Buganda kings with traditional architecture.</p>
+                <a href="#" class="learn-more">Explore <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="attraction-card">
+            <div class="attraction-img">
+                <img src="https://images.unsplash.com/photo-1672398786622-94a660cc3ed3?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kabaka Palace">
+            </div>
+            <div class="attraction-content">
+                <span class="distance">4.1 km away</span>
+                <h3>Kabaka Palace</h3>
+                <p>Historic royal residence offering tours and insights into Buganda's royal heritage and culture.</p>
+                <a href="#" class="learn-more">Explore <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="attraction-card">
+            <div class="attraction-img">
+                <img src="https://plus.unsplash.com/premium_photo-1661860529833-ce240a1632be?q=80&w=1134&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kampala Museum">
+            </div>
+            <div class="attraction-content">
+                <span class="distance">3.5 km away</span>
+                <h3>Uganda Museum</h3>
+                <p>Comprehensive collection of Uganda's natural history, ethnography, and cultural heritage artifacts.</p>
+                <a href="#" class="learn-more">Explore <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TRANSPORTATION OPTIONS -->
+<section class="transport-section">
+    <div class="section-header">
+        <h2>Getting Around</h2>
+        <p>Multiple convenient transportation options to reach Joy Hotel</p>
+        <div class="header-divider"></div>
+    </div>
+
+    <div class="transport-container">
+        <div class="transport-card">
+            <div class="transport-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+            <h3>From Airport</h3>
+            <p>Just 15 minutes by car from Kampala International Airport. We offer airport transfer services.</p>
+        </div>
+
+        <div class="transport-card">
+            <div class="transport-icon">
+                <i class="fas fa-taxi"></i>
+            </div>
+            <h3>Taxi Service</h3>
+            <p>Local taxis and ride-sharing services available 24/7. Direct access from main roads.</p>
+        </div>
+
+        <div class="transport-card">
+            <div class="transport-icon">
+                <i class="fas fa-bus"></i>
+            </div>
+            <h3>Public Transport</h3>
+            <p>Well-connected bus routes and public transportation near the hotel.</p>
+        </div>
+
+        <div class="transport-card">
+            <div class="transport-icon">
+                <i class="fas fa-car"></i>
+            </div>
+            <h3>Private Car</h3>
+            <p>Ample parking space and valet services available for your convenience.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="fade-in-up" id="about">
+    <div>
+        <h4>THE JOY HOTEL</h4>
+        <p>
+            Welcome to your home away.<br>
+            Affordable experience. Luxury<br>
+            comfort & perfect rates<br>
+            Own a home right in<br>
+            the heart of<br>
+            the city.
+        </p>
+        <p style="margin-top:55px; color: #8f7d68; font-size: 11px; letter-spacing:0.5px;">
+            © 2026 copyright Joy-Hotel.com
+        </p>
+    </div>
+
+    <div>
+        <h4>EXPLORE</h4>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="location.html">Location</a></li>
+            <li><a href="about.html">About Us</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <h4>GUEST SERVICES</h4>
+        <ul>
+            <li><a href="booking.html">Book Your Stay</a></li>
+            <li><a href="booking.html#manage">Manage My Booking</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.html#faq">FAQs</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <h4>CONTACT US</h4>
+        
+        <div class="contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>
+                193 Lumumba Avenue<br>
+                Kampala, U.G
+            </span>
+        </div>
+
+        <div class="contact-item">
+            <i class="fa-regular fa-envelope"></i>
+            <span>joyhotel@gmail.com</span>
+        </div>
+
+        <div class="contact-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>
+                +256-755-3550-86<br>
+                +256-783-683-462
+            </span>
+        </div>
+
+        <div class="socials">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+</footer>
+
+</div>
+
+<!-- MAP SCRIPT -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+
+// Initialize map
+const map = L.map('map').setView([0.3163, 32.5853], 15);
+
+// Add tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+}).addTo(map);
+
+// Custom marker icon
+const markerIcon = L.icon({
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+// Add marker for Joy Hotel
+const hotelMarker = L.marker([0.3163, 32.5853], { icon: markerIcon })
+    .addTo(map)
+    .bindPopup(`
+        <div style="text-align:center;">
+            <h3 style="color:#b58b3a; margin:0 0 8px 0; font-family:'Cormorant Garamond', serif; font-size:18px;">Joy Hotel</h3>
+            <p style="margin:5px 0; font-size:13px; color:#555;">193 Lumumba Avenue<br>Kampala, Uganda</p>
+            <a href="tel:+256755355086" style="color:#b58b3a; text-decoration:none; font-weight:600;">Call Us</a>
+        </div>
+    `)
+    .openPopup();
+
+// Add some nearby attractions markers
+const attractions = [
+    { name: 'Kasubi Tombs', coords: [0.2872, 32.5752] },
+    { name: 'Kabaka Palace', coords: [0.3456, 32.5234] },
+    { name: 'Uganda Museum', coords: [0.3340, 32.5880] }
+];
+
+attractions.forEach(attraction => {
+    L.circleMarker(attraction.coords, {
+        radius: 6,
+        fillColor: '#b58b3a',
+        color: '#fff',
+        weight: 2,
+        opacity: 0.8,
+        fillOpacity: 0.7
+    }).addTo(map).bindPopup(`<b>${attraction.name}</b>`);
+});
+
+// Get Directions Button
+document.querySelector('.btn-primary').addEventListener('click', function() {
+    window.open('https://www.google.com/maps/dir/?api=1&destination=0.3163,32.5853', '_blank');
+});
+
+// Call Us Button
+document.querySelector('.btn-secondary').addEventListener('click', function() {
+    window.location.href = 'tel:+256755355086';
+});
+
+// Smooth animations on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.attraction-card, .transport-card').forEach(el => {
+    observer.observe(el);
+});
+
+// Attraction cards hover effect
+document.querySelectorAll('.attraction-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-15px)';
+    });
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
+
+</script>
+
+
+<script>
+(function(){
+    var btn = document.getElementById('hamburgerBtn');
+    var nav = document.querySelector('header nav');
+    if(!btn || !nav) return;
+    function closeNav(){
+        nav.classList.remove('active');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded','false');
+        document.body.classList.remove('nav-open');
+    }
+    btn.addEventListener('click', function(){
+        var isOpen = nav.classList.toggle('active');
+        btn.classList.toggle('active', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        document.body.classList.toggle('nav-open', isOpen);
+    });
+    nav.querySelectorAll('a').forEach(function(link){
+        link.addEventListener('click', closeNav);
+    });
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') closeNav();
+    });
+})();
+</script>
+
+</body>
+</html>

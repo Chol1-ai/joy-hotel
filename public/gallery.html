@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gallery - Joy Hotel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --gold:#b58b3a;
+    --dark:#2f241b;
+    --light:#f8f4ef;
+    --border:#ccb58d;
+    --text:#4e4339;
+}
+
+body{
+    background:#f4efe9;
+    font-family:'Montserrat', sans-serif;
+    padding:12px;
+    color:var(--text);
+    scroll-behavior:smooth;
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    background:#fffdfa;
+    border:1px solid var(--border);
+    box-shadow:0 10px 50px rgba(0,0,0,.08);
+}
+
+/* ================= HEADER ================= */
+
+header{
+    height:58px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 35px;
+    background:#faf7f2;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.logo:hover {
+    transform:scale(1.05);
+}
+
+.logo-symbol{
+    position:relative;
+    width:28px;
+    height:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin-top:-4px;
+}
+
+.logo-symbol .crown{
+    color:var(--gold);
+    font-size:10px;
+    line-height:1;
+    margin-bottom:1px;
+    animation:bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.logo-symbol .j{
+    position:relative;
+    font-family:'Cormorant Garamond', serif;
+    font-size:30px;
+    line-height:.8;
+    color:var(--gold);
+    font-weight:700;
+    transition:all 0.3s ease;
+}
+
+.logo:hover .j {
+    text-shadow:0 4px 12px rgba(181, 139, 58, 0.4);
+}
+
+.logo-symbol .j::after{
+    content:'';
+    position:absolute;
+    top:7px;
+    left:9px;
+    width:5px;
+    height:9px;
+    background:#fffdfa;
+    border-radius:10px;
+    opacity:.95;
+}
+
+.logo-text{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    line-height:1;
+}
+
+.logo-text h1{
+    font-family:'Cormorant Garamond', serif;
+    color:var(--gold);
+    font-size:21px;
+    font-weight:600;
+    letter-spacing:.5px;
+    line-height:1;
+    transition:all 0.3s ease;
+}
+
+.logo:hover .logo-text h1 {
+    letter-spacing:1px;
+}
+
+.logo-text span{
+    font-size:6px;
+    letter-spacing:1.7px;
+    color:#98866d;
+    font-weight:600;
+    display:block;
+    text-align:center;
+    margin-left:2px;
+    margin-top:2px;
+}
+
+nav ul{
+    display:flex;
+    gap:32px;
+    list-style:none;
+}
+
+nav a{
+    text-decoration:none;
+    color:#43382d;
+    font-size:12px;
+    font-weight:600;
+    position:relative;
+    letter-spacing: 0.5px;
+    display:inline-block;
+    transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+nav a.active{
+    color: var(--gold);
+}
+
+nav a::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(181, 139, 58, 0.08);
+    border-radius:4px;
+    z-index:-1;
+    transform:scaleX(0);
+    transform-origin:right;
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+nav a:hover::before {
+    transform:scaleX(1);
+    transform-origin:left;
+}
+
+nav a:hover {
+    color: var(--gold);
+    transform: translateY(-2px);
+    text-shadow:0 2px 8px rgba(181, 139, 58, 0.2);
+}
+
+nav a::after {
+    content:'';
+    position:absolute;
+    bottom:-8px;
+    left:50%;
+    width:0;
+    height:2px;
+    background:var(--gold);
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform:translateX(-50%);
+}
+
+nav a:hover::after {
+    width:60%;
+}
+
+.nav-cta{
+    background:var(--gold);
+    color:white !important;
+    padding:9px 18px;
+    border-radius:20px;
+    letter-spacing:0.8px;
+}
+
+.nav-cta::before, .nav-cta::after{ display:none; }
+
+.nav-cta:hover{
+    background:#9f7728;
+    color:white !important;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(181, 139, 58, 0.35);
+    text-shadow:none;
+}
+
+/* ================= GALLERY HERO ================= */
+
+.gallery-hero{
+    background: linear-gradient(135deg, rgba(248,244,239,.95), rgba(248,244,239,.92)), url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop');
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    padding:80px 50px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.gallery-hero::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 20% 50%, rgba(181, 139, 58, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(181, 139, 58, 0.08) 0%, transparent 50%);
+    z-index:0;
+}
+
+.gallery-hero-content{
+    position:relative;
+    z-index:1;
+    max-width:800px;
+    margin:0 auto;
+    animation:fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity:0;
+        transform:translateY(40px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.gallery-hero h1{
+    font-family:'Cormorant Garamond', serif;
+    font-size:60px;
+    color:var(--dark);
+    margin-bottom:20px;
+    line-height:1.2;
+}
+
+.gallery-hero p{
+    font-size:18px;
+    color:#666;
+    line-height:1.8;
+    margin-bottom:30px;
+}
+
+.gallery-hero .divider{
+    width:100px;
+    height:2px;
+    background:var(--gold);
+    margin:30px auto;
+}
+
+/* ================= GALLERY GRID ================= */
+
+.gallery-section{
+    padding:60px 50px;
+}
+
+.gallery-filters{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-bottom:50px;
+    flex-wrap:wrap;
+    animation:slideInDown 0.6s ease-out both;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity:0;
+        transform:translateY(-30px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.filter-btn{
+    padding:10px 25px;
+    border:2px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    border-radius:4px;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing:0.5px;
+    position:relative;
+    overflow:hidden;
+}
+
+.filter-btn::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:var(--gold);
+    z-index:-1;
+    transform:scaleX(0);
+    transform-origin:right;
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.filter-btn:hover::before{
+    transform:scaleX(1);
+    transform-origin:left;
+}
+
+.filter-btn:hover,
+.filter-btn.active{
+    color:white;
+    background:var(--gold);
+    box-shadow:0 6px 20px rgba(181, 139, 58, 0.3);
+    transform:translateY(-2px);
+}
+
+.gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:25px;
+    animation:fadeIn 0.8s ease-out both;
+}
+
+@keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+}
+
+.gallery-item{
+    position:relative;
+    height:320px;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+    cursor:pointer;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation:scaleIn 0.6s ease-out both;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity:0;
+        transform:scale(0.9);
+    }
+    to {
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.gallery-item:nth-child(1) { animation-delay:0.1s; }
+.gallery-item:nth-child(2) { animation-delay:0.2s; }
+.gallery-item:nth-child(3) { animation-delay:0.3s; }
+.gallery-item:nth-child(4) { animation-delay:0.2s; }
+.gallery-item:nth-child(5) { animation-delay:0.3s; }
+.gallery-item:nth-child(6) { animation-delay:0.4s; }
+.gallery-item:nth-child(7) { animation-delay:0.3s; }
+.gallery-item:nth-child(8) { animation-delay:0.4s; }
+.gallery-item:nth-child(9) { animation-delay:0.5s; }
+
+.gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform 0.6s ease;
+    filter:brightness(0.85);
+}
+
+.gallery-item:hover img{
+    transform:scale(1.1);
+    filter:brightness(1);
+}
+
+.gallery-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg, rgba(181, 139, 58, 0.9) 0%, rgba(47, 36, 27, 0.9) 100%);
+    display:flex;
+    align-items:flex-end;
+    padding:25px;
+    opacity:0;
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index:2;
+}
+
+.gallery-item:hover .gallery-overlay{
+    opacity:1;
+}
+
+.gallery-info{
+    color:white;
+    width:100%;
+}
+
+.gallery-info h3{
+    font-family:'Cormorant Garamond', serif;
+    font-size:24px;
+    margin-bottom:8px;
+    transform:translateY(20px);
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gallery-item:hover .gallery-info h3{
+    transform:translateY(0);
+}
+
+.gallery-info p{
+    font-size:13px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gallery-item:hover .gallery-info p{
+    opacity:1;
+    transform:translateY(0);
+    transition-delay:0.1s;
+}
+
+.gallery-badge{
+    position:absolute;
+    top:15px;
+    right:15px;
+    background:var(--gold);
+    color:white;
+    padding:6px 12px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    z-index:3;
+    opacity:0;
+    transform:translateY(-10px);
+    transition:all 0.4s ease;
+}
+
+.gallery-item:hover .gallery-badge{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* ================= FOOTER =================*/
+
+footer{
+    border-top:1px solid var(--border);
+    background:linear-gradient(135deg, #faf7f2 0%, #f5f0e8 100%);
+    padding:50px 50px 30px;
+    display:grid;
+    grid-template-columns:1.2fr 1fr 1fr 1fr;
+    gap:40px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* ANIMATED BACKGROUND ELEMENTS */
+footer::before {
+    content:'';
+    position:absolute;
+    top:-50%;
+    right:-10%;
+    width:400px;
+    height:400px;
+    background:radial-gradient(circle, rgba(181, 139, 58, 0.05) 0%, transparent 70%);
+    border-radius:50%;
+    animation:float 8s ease-in-out infinite;
+    z-index:0;
+}
+
+footer::after {
+    content:'';
+    position:absolute;
+    bottom:-30%;
+    left:-5%;
+    width:350px;
+    height:350px;
+    background:radial-gradient(circle, rgba(181, 139, 58, 0.04) 0%, transparent 70%);
+    border-radius:50%;
+    animation:float-reverse 10s ease-in-out infinite;
+    z-index:0;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+}
+
+@keyframes float-reverse {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, 30px); }
+}
+
+/* FOOTER CONTENT POSITIONING */
+footer > div {
+    position:relative;
+    z-index:1;
+}
+
+footer h4{
+    font-family:'Cormorant Garamond', serif;
+    color:#b58b3a;
+    font-size:24px;
+    margin-bottom:20px;
+    font-weight: 600;
+    position:relative;
+    display:inline-block;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+
+/* ANIMATED UNDERLINE FOR FOOTER TITLES */
+footer h4::after {
+    content:'';
+    position:absolute;
+    bottom:-8px;
+    left:0;
+    width:0;
+    height:2px;
+    background:var(--gold);
+    transition:width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+footer h4:hover::after {
+    width:100%;
+}
+
+footer h4:hover {
+    transform:translateX(5px);
+    text-shadow:0 2px 8px rgba(181, 139, 58, 0.2);
+}
+
+footer p,
+footer li{
+    line-height:1.8;
+    list-style:none;
+    font-size:13px;
+    color: #554a3e;
+}
+
+footer ul li {
+    margin-bottom: 8px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* ANIMATED LIST ITEMS */
+footer ul li::before {
+    content:'';
+    position:absolute;
+    left:-100%;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(181, 139, 58, 0.08);
+    border-radius:4px;
+    z-index:-1;
+    transition:left 0.3s ease;
+}
+
+footer ul li:hover::before {
+    left:0;
+}
+
+/* FOOTER LINK STYLES WITH ENHANCED ANIMATIONS */
+footer ul li a {
+    text-decoration: none;
+    color: #554a3e;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: inline-block;
+    position: relative;
+    padding:2px 0;
+}
+
+footer ul li a:hover {
+    color: var(--gold);
+    transform: translateX(12px);
+}
+
+footer ul li a::before {
+    content: '›';
+    position: absolute;
+    left: -18px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--gold);
+    font-weight:700;
+}
+
+footer ul li a:hover::before {
+    opacity: 1;
+    left: -14px;
+}
+
+/* CONTACT ITEMS ANIMATION */
+.contact-item{
+    display:flex;
+    gap:12px;
+    margin-bottom:15px;
+    align-items:flex-start;
+    position:relative;
+    padding:8px;
+    border-radius:6px;
+    transition:all 0.3s ease;
+}
+
+.contact-item:hover {
+    background:rgba(181, 139, 58, 0.06);
+    padding:8px 12px;
+}
+
+.contact-item i{
+    color:var(--gold);
+    margin-top:5px;
+    font-size: 15px;
+    transition:all 0.3s ease;
+    flex-shrink:0;
+    animation:float-icon 2s ease-in-out infinite;
+}
+
+.contact-item:hover i {
+    transform:scale(1.2) rotate(10deg);
+    animation:none;
+}
+
+@keyframes float-icon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.contact-item span {
+    transition:all 0.3s ease;
+}
+
+.contact-item:hover span {
+    color:var(--gold);
+}
+
+/* SOCIALS WITH PULSE ANIMATION */
+.socials{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.socials a{
+    width:36px;
+    height:36px;
+    border:2px solid var(--gold);
+    border-radius:50%;
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position:relative;
+    overflow:hidden;
+}
+
+.socials a::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:var(--gold);
+    z-index:-1;
+    border-radius:50%;
+    transform:scale(0);
+    transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.socials a:hover::before {
+    transform:scale(1);
+}
+
+.socials a:hover {
+    color: white;
+    box-shadow:0 6px 20px rgba(181, 139, 58, 0.4);
+    transform:translateY(-4px);
+}
+
+@media(max-width:950px){
+    .gallery-grid{
+        grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    footer{
+        grid-template-columns:1fr;
+    }
+    
+    .gallery-hero h1{
+        font-size:40px;
+    }
+}
+
+
+/* ============ MOBILE NAV / HAMBURGER (added) ============ */
+.hamburger{
+    display:none;
+    width:26px;
+    height:20px;
+    flex-direction:column;
+    justify-content:space-between;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    z-index:200;
+}
+.hamburger span{
+    display:block;
+    width:100%;
+    height:2px;
+    background:var(--gold);
+    border-radius:2px;
+    transition:all 0.3s ease;
+}
+.hamburger.active span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+.hamburger.active span:nth-child(2){ opacity:0; }
+.hamburger.active span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
+
+body.nav-open{ overflow:hidden; }
+
+@media(max-width:880px){
+    header{
+        display:grid;
+        grid-template-columns:26px 1fr 26px;
+        align-items:center;
+        column-gap:10px;
+        padding:0 16px;
+    }
+    .hamburger{
+        display:flex;
+        grid-column:1;
+    }
+    .logo{
+        grid-column:2;
+        justify-self:center;
+    }
+    nav{
+        grid-column:1/-1;
+        position:fixed;
+        top:58px;
+        left:0;
+        width:100%;
+        height:calc(100vh - 58px);
+        background:#faf7f2;
+        z-index:99;
+        transform:translateX(-100%);
+        transition:transform .35s ease;
+        overflow-y:auto;
+        border-top:1px solid var(--border);
+        box-shadow:0 12px 24px rgba(0,0,0,.08);
+    }
+    nav.active{
+        transform:translateX(0);
+    }
+    nav ul{
+        flex-direction:column;
+        gap:0 !important;
+        width:100%;
+        padding:10px 0 30px;
+        flex-wrap:nowrap !important;
+    }
+    nav ul li{
+        width:100%;
+        text-align:center;
+    }
+    nav ul li a{
+        display:block;
+        width:100%;
+        padding:16px 20px;
+        font-size:14px;
+    }
+    nav ul li a::after{ display:none; }
+    nav ul li a.nav-cta{
+        display:inline-block;
+        width:calc(100% - 48px);
+        margin:14px 24px 0;
+        padding:12px 18px;
+    }
+}
+
+@media(max-width:480px){
+    body{ padding:6px; }
+    .logo-text h1{ font-size:18px; }
+    .logo-text span{ font-size:5px; }
+    .banner-content h1{ font-size:30px !important; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+<button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<a href="./index.html" class="logo">
+    <div class="logo-symbol">
+        <div class="crown">♛</div>
+        <div class="j">J</div>
+    </div>
+    <div class="logo-text">
+        <h1>JOY HOTEL</h1>
+        <span>YOUR PERFECT STAY</span>
+    </div>
+</a>
+
+<nav>
+    <ul>
+        <li><a href="./index.html">HOME</a></li>
+        <li><a href="#" class="active">GALLERY</a></li>
+        <li><a href="./location.html">LOCATION</a></li>
+        <li><a href="./about.html">ABOUT US</a></li>
+        <li><a href="./contact.html">CONTACT</a></li>
+        <li><a href="./booking.html" class="nav-cta">BOOK NOW</a></li>
+    </ul>
+</nav>
+
+</header>
+
+<section class="gallery-hero">
+    <div class="gallery-hero-content">
+        <h1>OUR GALLERY</h1>
+        <div class="divider"></div>
+        <p>Explore the luxurious spaces and stunning facilities at Joy Hotel. Every moment at our hotel is designed to create unforgettable memories.</p>
+    </div>
+</section>
+
+<section class="gallery-section">
+
+<div class="gallery-filters">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="rooms">ROOMS</button>
+    <button class="filter-btn" data-filter="dining">DINING</button>
+    <button class="filter-btn" data-filter="spa">SPA & WELLNESS</button>
+    <button class="filter-btn" data-filter="events">EVENTS</button>
+    <button class="filter-btn" data-filter="facilities">FACILITIES</button>
+</div>
+
+<div class="gallery-grid">
+
+    <!-- ROOMS -->
+    <div class="gallery-item" data-category="rooms">
+        <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1200&auto=format&fit=crop" alt="Luxury Room" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-luxuryroom/1200/800';">
+        <div class="gallery-badge">ROOMS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Master Suite</h3>
+                <p>Luxurious sleeping quarters with premium amenities</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="rooms">
+        <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=1200&auto=format&fit=crop" alt="Deluxe Room" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-deluxeroom/1200/800';">
+        <div class="gallery-badge">ROOMS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Deluxe Room</h3>
+                <p>Spacious comfort with modern design</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="rooms">
+        <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1200&auto=format&fit=crop" alt="Standard Room" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-standardroom/1200/800';">
+        <div class="gallery-badge">ROOMS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Standard Room</h3>
+                <p>Comfortable accommodation with all essentials</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DINING -->
+    <div class="gallery-item" data-category="dining">
+        <img src="https://images.unsplash.com/photo-1753727471014-efe38840c7c7?q=80&w=1200&auto=format&fit=crop" alt="Restaurant" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-restaurant/1200/800';">
+        <div class="gallery-badge">DINING</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Main Restaurant</h3>
+                <p>Elegant dining with international cuisine</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="dining">
+        <img src="https://images.unsplash.com/photo-1639696318296-2079d8a9216b?q=80&w=1200&auto=format&fit=crop" alt="Breakfast" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-breakfast/1200/800';">
+        <div class="gallery-badge">DINING</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Breakfast Buffet</h3>
+                <p>Delicious morning selection</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="dining">
+        <img src="https://images.unsplash.com/photo-1683117569462-72760dc8eb51?q=80&w=1200&auto=format&fit=crop" alt="Bar" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-bar/1200/800';">
+        <div class="gallery-badge">DINING</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Lounge Bar</h3>
+                <p>Refreshing drinks in a relaxing atmosphere</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPA & WELLNESS -->
+    <div class="gallery-item" data-category="spa">
+        <img src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?q=80&w=1200&auto=format&fit=crop" alt="Spa" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-spa/1200/800';">
+        <div class="gallery-badge">SPA</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Spa & Wellness</h3>
+                <p>Rejuvenating treatments and relaxation</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="spa">
+        <img src="https://images.unsplash.com/photo-1700457551715-1a841c35c0f3?q=80&w=1200&auto=format&fit=crop" alt="Swimming Pool" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-swimmingpool/1200/800';">
+        <div class="gallery-badge">SPA</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Swimming Pool</h3>
+                <p>Olympic-size heated pool</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="spa">
+        <img src="https://images.unsplash.com/photo-1540496905036-5937c10647cc?q=80&w=1200&auto=format&fit=crop" alt="Gym" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-gym/1200/800';">
+        <div class="gallery-badge">SPA</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Fitness Center</h3>
+                <p>State-of-the-art gym equipment</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="gallery-item" data-category="events">
+        <img src="https://images.unsplash.com/photo-1676275773812-637590f8e7c7?q=80&w=1200&auto=format&fit=crop" alt="Conference" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-conference/1200/800';">
+        <div class="gallery-badge">EVENTS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Conference Hall</h3>
+                <p>Modern meetings and conferences</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="events">
+        <img src="https://images.unsplash.com/photo-1677768062274-fdd45caac233?q=80&w=1200&auto=format&fit=crop" alt="Wedding" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-wedding/1200/800';">
+        <div class="gallery-badge">EVENTS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Ballroom</h3>
+                <p>Elegant space for celebrations</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="events">
+        <img src="https://images.unsplash.com/photo-1759646827844-bbbdbfd0ada2?q=80&w=1200&auto=format&fit=crop" alt="Banquet" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-banquet/1200/800';">
+        <div class="gallery-badge">EVENTS</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Banquet Room</h3>
+                <p>Private dining for special occasions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FACILITIES -->
+    <div class="gallery-item" data-category="facilities">
+        <img src="https://images.unsplash.com/photo-1742844552264-71e01c8dd7c0?q=80&w=1200&auto=format&fit=crop" alt="Lobby" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-lobby/1200/800';">
+        <div class="gallery-badge">FACILITIES</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Grand Lobby</h3>
+                <p>Welcoming entry hall with elegant design</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="facilities">
+        <img src="https://images.unsplash.com/photo-1760276148666-1fd62b875fa6?q=80&w=1200&auto=format&fit=crop" alt="Corridor" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-corridor/1200/800';">
+        <div class="gallery-badge">FACILITIES</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Hallways</h3>
+                <p>Beautifully designed corridors</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-item" data-category="facilities">
+        <img src="https://images.unsplash.com/photo-1757007158339-4c9a0bee45d5?q=80&w=1200&auto=format&fit=crop" alt="Exterior" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-exterior/1200/800';">
+        <div class="gallery-badge">FACILITIES</div>
+        <div class="gallery-overlay">
+            <div class="gallery-info">
+                <h3>Exterior View</h3>
+                <p>Beautiful architecture and landscaping</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</section>
+
+<footer class="fade-in-up" id="about">
+
+<div>
+    <h4>THE JOY HOTEL</h4>
+    <p>
+        Welcome to your home away.<br>
+        Affordable experience. Luxury<br>
+        comfort & perfect rates<br>
+        Own a home right in<br>
+        the heart of<br>
+        the city.
+    </p>
+    <p style="margin-top:55px; color: #8f7d68; font-size: 11px; letter-spacing:0.5px;">
+        © 2026 copyright Joy-Hotel.com
+    </p>
+</div>
+
+<div>
+    <h4>EXPLORE</h4>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="location.html">Location</a></li>
+        <li><a href="about.html">About Us</a></li>
+    </ul>
+</div>
+
+<div>
+    <h4>GUEST SERVICES</h4>
+    <ul>
+        <li><a href="booking.html">Book Your Stay</a></li>
+        <li><a href="booking.html#manage">Manage My Booking</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="contact.html#faq">FAQs</a></li>
+    </ul>
+</div>
+
+<div>
+    <h4>CONTACT US</h4>
+    
+    <div class="contact-item">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>
+            193 Lumumba Avenue<br>
+            Kampala, U.G
+        </span>
+    </div>
+
+    <div class="contact-item">
+        <i class="fa-regular fa-envelope"></i>
+        <span>joyhotel@gmail.com</span>
+    </div>
+
+    <div class="contact-item">
+        <i class="fa-solid fa-phone"></i>
+        <span>
+            +256-755-3550-86<br>
+            +256-783-683-462
+        </span>
+    </div>
+
+    <div class="socials">
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://x.com" target="_blank" rel="noopener noreferrer" title="Twitter"><i class="fab fa-x-twitter"></i></a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram"><i class="fab fa-instagram"></i></a>
+    </div>
+</div>
+
+</footer>
+
+</div>
+
+<script>
+
+// Filter functionality
+const filterBtns = document.querySelectorAll('.filter-btn');
+const galleryItems = document.querySelectorAll('.gallery-item');
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterBtns.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        
+        const filterValue = btn.getAttribute('data-filter');
+        
+        // Filter items
+        galleryItems.forEach(item => {
+            if (filterValue === 'all') {
+                item.style.display = 'block';
+                item.style.animation = 'scaleIn 0.6s ease-out both';
+            } else {
+                if (item.getAttribute('data-category') === filterValue) {
+                    item.style.display = 'block';
+                    item.style.animation = 'scaleIn 0.6s ease-out both';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+    });
+});
+
+// Parallax effect on scroll
+let ticking = false;
+let lastScrollY = 0;
+
+window.addEventListener('scroll', () => {
+    lastScrollY = window.scrollY;
+    
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            applyParallaxEffects();
+            ticking = false;
+        });
+        ticking = true;
+    }
+}, { passive: true });
+
+function applyParallaxEffects() {
+    const scrolled = lastScrollY;
+    const hero = document.querySelector('.gallery-hero');
+    
+    if (hero) {
+        hero.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+    }
+    
+    const items = document.querySelectorAll('.gallery-item');
+    items.forEach((item) => {
+        const itemRect = item.getBoundingClientRect();
+        const itemScrollPosition = itemRect.top + scrolled;
+        const offset = (scrolled - itemScrollPosition + window.innerHeight) * 0.05;
+        item.style.transform = `translateY(${offset}px)`;
+    });
+}
+
+// Navigation active state
+const navLinks = document.querySelectorAll("nav a");
+navLinks.forEach(link => {
+    link.addEventListener("click", function(e){
+        navLinks.forEach(item => item.classList.remove("active"));
+        this.classList.add("active");
+    });
+});
+
+</script>
+
+
+<script>
+(function(){
+    var btn = document.getElementById('hamburgerBtn');
+    var nav = document.querySelector('header nav');
+    if(!btn || !nav) return;
+    function closeNav(){
+        nav.classList.remove('active');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded','false');
+        document.body.classList.remove('nav-open');
+    }
+    btn.addEventListener('click', function(){
+        var isOpen = nav.classList.toggle('active');
+        btn.classList.toggle('active', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        document.body.classList.toggle('nav-open', isOpen);
+    });
+    nav.querySelectorAll('a').forEach(function(link){
+        link.addEventListener('click', closeNav);
+    });
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') closeNav();
+    });
+})();
+</script>
+
+</body>
+</html>
