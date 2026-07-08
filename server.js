@@ -24,6 +24,9 @@ const apiLimiter = rateLimit({
   max: 60,
   message: { error: 'Too many requests, please try again later.' },
 });
+
+// Admin routes need to stay responsive for dashboard actions.
+app.use('/api/admin', adminRoutes);
 app.use('/api/', apiLimiter);
 
 // Static site (all HTML/CSS/JS pages)
@@ -39,7 +42,6 @@ app.use((err, req, res, next) => {
 // API routes
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/admin', adminRoutes);
 
 app.get('/api/gallery', (req, res) => {
   res.json({ gallery: loadGallery() });
