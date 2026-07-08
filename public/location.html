@@ -1172,7 +1172,7 @@ body.nav-open{ overflow:hidden; }
                 </div>
             </div>
 
-            <div class="info-item">
+            <div class="info-item info-item-clickable" role="button" tabindex="0" aria-label="Get directions to Joy Hotel" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=0.3163,32.5853', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.open('https://www.google.com/maps/dir/?api=1&destination=0.3163,32.5853', '_blank'); }">
                 <i class="fas fa-taxi"></i>
                 <div class="info-item-content">
                     <h3>Getting Here</h3>
@@ -1338,7 +1338,7 @@ body.nav-open{ overflow:hidden; }
 
         <div class="contact-item">
             <i class="fa-regular fa-envelope"></i>
-            <span>joyhotel@gmail.com</span>
+            <a href="mailto:joyhotel@gmail.com" onclick="fetch('/api/notifications/email-click',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'email=joyhotel@gmail.com'}).catch(()=>{});">joyhotel@gmail.com</a>
         </div>
 
         <div class="contact-item">

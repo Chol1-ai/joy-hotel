@@ -20,6 +20,7 @@ const bookingSchema = new mongoose.Schema(
     phone: { type: String, required: true, trim: true },
     roomType: { type: String, required: true, trim: true },
     roomTypes: [{ type: String, trim: true, enum: ROOM_TYPES }],
+    assignedRoomNumbers: [{ type: String, trim: true }],
     checkIn: { type: Date, required: true },
     checkOut: { type: Date, required: true },
     guests: { type: Number, required: true, min: 1, max: 10 },
@@ -27,6 +28,18 @@ const bookingSchema = new mongoose.Schema(
     nights: { type: Number, required: true, min: 1 },
     pricePerNight: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
+    paymentMethod: {
+      type: String,
+      enum: ["mobile_money", "paypal", "visa", "none"],
+      default: "none",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+    paymentReference: { type: String, trim: true, default: "" },
+    paidAt: { type: Date, default: null },
     status: {
       type: String,
       enum: ["confirmed", "cancelled"],

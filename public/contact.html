@@ -907,7 +907,7 @@ body.nav-open{ overflow:hidden; }
         <div class="info-card">
             <div class="info-icon"><i class="fa-regular fa-envelope"></i></div>
             <h3>Email Us</h3>
-            <p><a href="mailto:joyhotel@gmail.com">joyhotel@gmail.com</a><br>We reply within 24 hours</p>
+            <p><a href="mailto:joyhotel@gmail.com" onclick="fetch('/api/notifications/email-click',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'email=joyhotel@gmail.com'}).catch(()=>{});">joyhotel@gmail.com</a><br>We reply within 24 hours</p>
         </div>
     </div>
 </section>

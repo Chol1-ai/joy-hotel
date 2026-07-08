@@ -1304,6 +1304,17 @@
                 ></textarea>
               </div>
 
+              <div class="field">
+                <label for="paymentMethod">Payment Method</label>
+                <select id="paymentMethod" name="paymentMethod">
+                  <option value="none">Pay Later</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="paypal">PayPal</option>
+                  <option value="visa">Visa / Card</option>
+                </select>
+                <p class="muted" style="margin-top:6px;">Choose a payment option to continue to the provider checkout page.</p>
+              </div>
+
               <button type="submit" class="submit-btn" id="submitBtn">
                 <i class="fa-solid fa-calendar-check"></i>
                 <span>CONFIRM RESERVATION</span>
@@ -1331,6 +1342,7 @@
             <p>A confirmation has been recorded for your stay at Joy Hotel.</p>
             <div class="confirmation-code" id="confCode"></div>
             <div class="confirmation-details" id="confDetails"></div>
+            <div id="paymentBox" class="payment-box" style="display:none; margin-top:16px;"></div>
             <p style="font-size: 12px">
               Keep your confirmation code and email safe — you'll need them to
               manage this booking.
@@ -1436,7 +1448,7 @@
           </div>
           <div class="contact-item">
             <i class="fa-regular fa-envelope"></i>
-            <span>joyhotel@gmail.com</span>
+            <a href="mailto:joyhotel@gmail.com" onclick="fetch('/api/notifications/email-click',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'email=joyhotel@gmail.com'}).catch(()=>{});">joyhotel@gmail.com</a>
           </div>
           <div class="contact-item">
             <i class="fa-solid fa-phone"></i>
@@ -1536,6 +1548,10 @@
                     <div class="price">${formatCurrency(room.pricePerNight)}<span> / night</span></div>
                     <div class="room-check"><i class="fa-solid fa-check"></i></div>
                 </div>
+                <div class="room-meta">
+                  <span>${room.availableCount ?? 0} available</span>
+                  <span>Rooms: ${(room.roomNumbers || []).join(', ')}</span>
+                </div>
             </div>
         </div>
     `,
@@ -1616,6 +1632,7 @@
 
         let html = `
         <div class="summary-row"><span>Rooms</span><span>${selectedRoomDetails.map((room) => room.name).join(", ")}</span></div>
+        <div class="summary-row"><span>Room numbers</span><span>${selectedRoomDetails.map((room) => (room.roomNumbers || []).slice(0, 4).join(', ')).join(' | ')}</span></div>
         <div class="summary-row"><span>Rate</span><span>${formatCurrency(selectedRoomDetails[0].pricePerNight)} / night each</span></div>
     `;
 
@@ -1689,6 +1706,7 @@
       const formSection = document.getElementById("formSection");
       const roomsSection = document.querySelector(".rooms-section");
       const confirmationCard = document.getElementById("confirmationCard");
+      const paymentBox = document.getElementById("paymentBox");
 
       bookingForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1712,6 +1730,7 @@
           specialRequests: document
             .getElementById("specialRequests")
             .value.trim(),
+          paymentMethod: document.getElementById("paymentMethod").value,
         };
 
         if (!payload.fullName || !payload.email || !payload.phone) {
@@ -1749,11 +1768,32 @@
         document.getElementById("confDetails").innerHTML = `
         <div class="row"><span>Guest</span><span>${booking.fullName}</span></div>
         <div class="row"><span>Room</span><span>${booking.roomType}</span></div>
+        <div class="row"><span>Room numbers</span><span>${(booking.assignedRoomNumbers || []).join(', ') || 'Pending assignment'}</span></div>
         <div class="row"><span>Check-in</span><span>${new Date(booking.checkIn).toDateString()}</span></div>
         <div class="row"><span>Check-out</span><span>${new Date(booking.checkOut).toDateString()}</span></div>
         <div class="row"><span>Nights</span><span>${booking.nights}</span></div>
         <div class="row"><span>Total</span><span>${formatCurrency(booking.totalPrice)}</span></div>
+        <div class="row"><span>Payment</span><span>${booking.paymentMethod === "none" ? "Pay later" : booking.paymentMethod.replace(/_/g, " ")}</span></div>
     `;
+
+        if (booking.paymentMethod && booking.paymentMethod !== "none") {
+          paymentBox.style.display = "block";
+          const providerName = booking.paymentMethod === "mobile_money"
+            ? "Mobile Money"
+            : booking.paymentMethod === "paypal"
+              ? "PayPal"
+              : "Visa / Card";
+          paymentBox.innerHTML = `
+            <div class="payment-card">
+              <h4>Continue to ${providerName}</h4>
+              <p>Choose the provider checkout page to complete your stay payment for ${formatCurrency(booking.totalPrice)}.</p>
+              <a class="submit-btn" id="payNowBtn" href="/pay/${booking.paymentMethod}.html?code=${booking.confirmationCode}&amount=${booking.totalPrice}" style="display:inline-block; text-decoration:none;">PAY WITH ${providerName.toUpperCase()}</a>
+            </div>
+          `;
+        } else {
+          paymentBox.style.display = "none";
+          paymentBox.innerHTML = "";
+        }
 
         roomsSection.style.display = "none";
         formSection.style.display = "none";
@@ -1802,6 +1842,7 @@
             <div class="row"><span>Confirmation Code</span><span>${booking.confirmationCode}</span></div>
             <div class="row"><span>Guest</span><span>${booking.fullName}</span></div>
             <div class="row"><span>Room</span><span>${booking.roomType}</span></div>
+            <div class="row"><span>Room numbers</span><span>${(booking.assignedRoomNumbers || []).join(', ') || 'Pending assignment'}</span></div>
             <div class="row"><span>Check-in</span><span>${new Date(booking.checkIn).toDateString()}</span></div>
             <div class="row"><span>Check-out</span><span>${new Date(booking.checkOut).toDateString()}</span></div>
             <div class="row"><span>Guests</span><span>${booking.guests}</span></div>

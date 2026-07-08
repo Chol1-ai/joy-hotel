@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joy Hotel Admin Dashboard</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --gold: #b58b3a;
+        --dark: #2f241b;
+        --light: #f8f4ef;
+        --bg: #f4efe9;
+        --border: #dfd2bf;
+        --success: #2f7d4f;
+        --warning: #c97a12;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+      }
+      .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+      .card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0,0,0,.06);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .topbar h1 { margin: 0; font-size: 28px; }
+      .topbar p { margin: 4px 0 0; color: #6a655d; }
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn-primary { background: var(--gold); color: white; }
+      .btn-secondary { background: var(--light); color: var(--dark); }
+      .btn-danger { background: #b33a3a; color: white; }
+      .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .stat { padding: 18px; background: var(--light); border-radius: 12px; }
+      .stat strong { display: block; font-size: 24px; margin-top: 8px; }
+      .panel { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+      .room-card, .gallery-card, .request-card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        background: #fffdfa;
+      }
+      .room-card input, .room-card select, .gallery-card input, .gallery-card textarea, .gallery-card select, .login-form input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-top: 6px;
+        margin-bottom: 10px;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .pill.available { background: #e8f7ed; color: var(--success); }
+      .pill.full { background: #fff1df; color: var(--warning); }
+      .login { max-width: 480px; margin: 80px auto; }
+      .login-form { display: grid; gap: 12px; }
+      .hidden { display: none !important; }
+      .request-list { display: grid; gap: 12px; }
+      .muted { color: #736c63; font-size: 13px; }
+      .empty { color: #866f4f; font-style: italic; }
+      .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .table th, .table td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
+      .table th { color: #745f42; }
+      @media (max-width: 700px) { .container{padding:14px;} .topbar{flex-direction:column; align-items:flex-start;} }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <div>
+          <h1>Joy Hotel Admin Dashboard</h1>
+          <p>Manage prices, room availability, gallery items and guest requests.</p>
+        </div>
+        <button id="logoutBtn" class="btn btn-secondary hidden">Logout</button>
+      </div>
+
+      <div id="loginView" class="card login">
+        <h2>Secure admin access</h2>
+        <p class="muted">Use the credentials configured on the server to continue.</p>
+        <form id="loginForm" class="login-form">
+          <input name="username" placeholder="Admin username" required />
+          <input name="password" type="password" placeholder="Admin password" required />
+          <button class="btn btn-primary" type="submit">Sign in</button>
+        </form>
+        <p id="loginMessage" class="muted"></p>
+      </div>
+
+      <div id="dashboardView" class="hidden">
+        <div class="grid" id="statsGrid"></div>
+
+        <div class="card">
+          <h3>Room availability & pricing</h3>
+          <div id="roomsPanel" class="panel"></div>
+        </div>
+
+        <div class="card">
+          <h3>Gallery management</h3>
+          <div id="galleryPanel" class="panel"></div>
+        </div>
+
+        <div class="card">
+          <h3>Recent notifications</h3>
+          <div id="notificationsList"></div>
+        </div>
+
+        <div class="card">
+          <h3>Client requests</h3>
+          <div class="request-list">
+            <div class="request-card">
+              <h4>Bookings</h4>
+              <div id="bookingsList"></div>
+            </div>
+            <div class="request-card">
+              <h4>Contact messages</h4>
+              <div id="contactsList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const loginView = document.getElementById('loginView');
+      const dashboardView = document.getElementById('dashboardView');
+      const loginForm = document.getElementById('loginForm');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const loginMessage = document.getElementById('loginMessage');
+      const statsGrid = document.getElementById('statsGrid');
+      const roomsPanel = document.getElementById('roomsPanel');
+      const galleryPanel = document.getElementById('galleryPanel');
+      const bookingsList = document.getElementById('bookingsList');
+      const contactsList = document.getElementById('contactsList');
+      const notificationsList = document.getElementById('notificationsList');
+
+      let rooms = [];
+      let gallery = [];
+      let bookings = [];
+      let contacts = [];
+      let notifications = [];
+
+      async function request(path, options = {}) {
+        const response = await fetch(path, {
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await response.json() : await response.text();
+        if (!response.ok) {
+          throw new Error(typeof data === 'string' ? data : data.error || 'Request failed');
+        }
+        return data;
+      }
+
+      async function checkAuth() {
+        try {
+          await request('/api/admin/me');
+          showDashboard();
+          await loadData();
+        } catch (error) {
+          showLogin();
+        }
+      }
+
+      function showLogin() {
+        loginView.classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+      }
+
+      function showDashboard() {
+        loginView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+      }
+
+      function renderStats() {
+        const availableRooms = rooms.reduce((sum, room) => sum + (Number(room.availableCount) || 0), 0);
+        const fullRooms = rooms.length - rooms.filter((room) => room.status === 'available').length;
+        statsGrid.innerHTML = `
+          <div class="stat"><span class="muted">Room types</span><strong>${rooms.length}</strong></div>
+          <div class="stat"><span class="muted">Available rooms</span><strong>${availableRooms}</strong></div>
+          <div class="stat"><span class="muted">Full room types</span><strong>${fullRooms}</strong></div>
+          <div class="stat"><span class="muted">New enquiries</span><strong>${contacts.filter((item) => item.status === 'new').length}</strong></div>
+        `;
+      }
+
+      function renderRooms() {
+        if (!rooms.length) {
+          roomsPanel.innerHTML = '<div class="empty">No room data yet.</div>';
+          return;
+        }
+
+        roomsPanel.innerHTML = rooms.map((room) => `
+          <div class="room-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <h4>${room.name}</h4>
+              <span class="pill ${room.status === 'available' ? 'available' : 'full'}">${room.status === 'available' ? 'Available' : 'Full'}</span>
+            </div>
+            <p class="muted">${room.description || ''}</p>
+            <label>
+              Price per night
+              <input type="number" data-room-id="${room.id}" data-field="pricePerNight" value="${room.pricePerNight}" />
+            </label>
+            <label>
+              Number of available rooms
+              <input type="number" min="0" data-room-id="${room.id}" data-field="availableCount" value="${room.availableCount ?? 0}" />
+            </label>
+            <label>
+              Room numbers (comma separated)
+              <input type="text" data-room-id="${room.id}" data-field="roomNumbers" value="${(room.roomNumbers || []).join(', ')}" />
+            </label>
+            <label>
+              Availability status
+              <select data-room-id="${room.id}" data-field="status">
+                <option value="available" ${room.status === 'available' ? 'selected' : ''}>Available</option>
+                <option value="full" ${room.status === 'full' ? 'selected' : ''}>Full</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" data-save-room="${room.id}">Save room</button>
+          </div>
+        `).join('');
+      }
+
+      function renderGallery() {
+        if (!gallery.length) {
+          galleryPanel.innerHTML = '<div class="empty">No gallery items yet.</div>';
+          return;
+        }
+
+        galleryPanel.innerHTML = gallery.map((item) => `
+          <div class="gallery-card">
+            <h4>${item.title}</h4>
+            <p class="muted">${item.description || ''}</p>
+            <label>
+              Title
+              <input type="text" data-gallery-id="${item.id}" data-field="title" value="${item.title}" />
+            </label>
+            <label>
+              Category
+              <select data-gallery-id="${item.id}" data-field="category">
+                <option value="rooms" ${item.category === 'rooms' ? 'selected' : ''}>Rooms</option>
+                <option value="dining" ${item.category === 'dining' ? 'selected' : ''}>Dining</option>
+                <option value="spa" ${item.category === 'spa' ? 'selected' : ''}>Spa</option>
+                <option value="events" ${item.category === 'events' ? 'selected' : ''}>Events</option>
+                <option value="facilities" ${item.category === 'facilities' ? 'selected' : ''}>Facilities</option>
+              </select>
+            </label>
+            <label>
+              Image URL
+              <input type="text" data-gallery-id="${item.id}" data-field="imageUrl" value="${item.imageUrl}" />
+            </label>
+            <label>
+              Description
+              <textarea data-gallery-id="${item.id}" data-field="description">${item.description || ''}</textarea>
+            </label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-primary" data-save-gallery="${item.id}">Save</button>
+              <button class="btn btn-danger" data-delete-gallery="${item.id}">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderNotifications() {
+        if (!notifications.length) {
+          notificationsList.innerHTML = '<div class="empty">No notifications yet.</div>';
+          return;
+        }
+
+        notificationsList.innerHTML = notifications.map((item) => `
+          <div class="request-card">
+            <strong>${item.type === 'footer_email_click' ? 'Footer email clicked' : 'Notification'}</strong>
+            <p class="muted">${item.details?.email || 'No email recorded'}</p>
+            <p class="muted">${new Date(item.createdAt).toLocaleString()}</p>
+          </div>
+        `).join('');
+      }
+
+      function renderRequests() {
+        if (!bookings.length) {
+          bookingsList.innerHTML = '<div class="empty">No bookings yet.</div>';
+        } else {
+          bookingsList.innerHTML = `
+            <table class="table">
+              <thead><tr><th>Guest</th><th>Room</th><th>Status</th><th>Check-in</th></tr></thead>
+              <tbody>
+                ${bookings.map((booking) => `
+                  <tr>
+                    <td>${booking.fullName}<br><span class="muted">${booking.email}</span></td>
+                    <td>${booking.roomType}</td>
+                    <td>${booking.status}<br><span class="muted">${booking.paymentStatus || 'pending'}</span></td>
+                    <td>${new Date(booking.checkIn).toLocaleDateString()}<br><span class="muted">${booking.paymentMethod === 'none' ? 'Pay later' : booking.paymentMethod.replace(/_/g, ' ')}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+
+        if (!contacts.length) {
+          contactsList.innerHTML = '<div class="empty">No messages yet.</div>';
+        } else {
+          contactsList.innerHTML = `
+            <table class="table">
+              <thead><tr><th>From</th><th>Subject</th><th>Status</th></tr></thead>
+              <tbody>
+                ${contacts.map((contact) => `
+                  <tr>
+                    <td>${contact.name}<br><span class="muted">${contact.email}</span></td>
+                    <td>${contact.subject}<br><span class="muted">${contact.message}</span></td>
+                    <td>${contact.status}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+      }
+
+      async function loadData() {
+        const data = await request('/api/admin/requests');
+        bookings = data.bookings || [];
+        contacts = data.contacts || [];
+        notifications = data.notifications || [];
+
+        const roomsData = await request('/api/admin/rooms');
+        rooms = roomsData.rooms || [];
+
+        const galleryData = await request('/api/admin/gallery');
+        gallery = galleryData.gallery || [];
+
+        renderStats();
+        renderRooms();
+        renderGallery();
+        renderNotifications();
+        renderRequests();
+      }
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        try {
+          await request('/api/admin/login', {
+            method: 'POST',
+            body: JSON.stringify({ username: formData.get('username'), password: formData.get('password') }),
+          });
+          loginMessage.textContent = 'Signed in successfully.';
+          await loadData();
+          showDashboard();
+        } catch (error) {
+          loginMessage.textContent = error.message;
+        }
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          await request('/api/admin/logout', { method: 'POST' });
+          showLogin();
+          loginMessage.textContent = 'You have been logged out.';
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      document.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (target.matches('[data-save-room]')) {
+          const roomId = target.getAttribute('data-save-room');
+          const card = target.closest('.room-card');
+          const price = card.querySelector('[data-field="pricePerNight"]').value;
+          const status = card.querySelector('[data-field="status"]').value;
+          const availableCount = card.querySelector('[data-field="availableCount"]').value;
+          const roomNumbers = card.querySelector('[data-field="roomNumbers"]').value;
+          await request(`/api/admin/rooms/${roomId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ pricePerNight: Number(price), status, availableCount: Number(availableCount), roomNumbers }),
+          });
+          await loadData();
+        }
+
+        if (target.matches('[data-save-gallery]')) {
+          const itemId = target.getAttribute('data-save-gallery');
+          const card = target.closest('.gallery-card');
+          const payload = {
+            title: card.querySelector('[data-field="title"]').value,
+            category: card.querySelector('[data-field="category"]').value,
+            imageUrl: card.querySelector('[data-field="imageUrl"]').value,
+            description: card.querySelector('[data-field="description"]').value,
+          };
+          await request(`/api/admin/gallery/${itemId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+          });
+          await loadData();
+        }
+
+        if (target.matches('[data-delete-gallery]')) {
+          const itemId = target.getAttribute('data-delete-gallery');
+          await request(`/api/admin/gallery/${itemId}`, { method: 'DELETE' });
+          await loadData();
+        }
+      });
+
+      checkAuth();
+    </script>
+  </body>
+</html>

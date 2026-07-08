@@ -1,0 +1,62 @@
+[
+  {
+    "id": "deluxe",
+    "name": "Deluxe Room",
+    "pricePerNight": 180000,
+    "maxGuests": 2,
+    "description": "Elegant comfort with a king bed, city views and a marble bathroom.",
+    "image": "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=900&auto=format&fit=crop",
+    "status": "available",
+    "availableCount": 4,
+    "roomNumbers": [
+      "101",
+      "102",
+      "103",
+      "104"
+    ]
+  },
+  {
+    "id": "executive",
+    "name": "Executive Suite",
+    "pricePerNight": 260000,
+    "maxGuests": 3,
+    "description": "A spacious suite with a separate lounge, workspace and premium amenities.",
+    "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=900&auto=format&fit=crop",
+    "status": "available",
+    "availableCount": 3,
+    "roomNumbers": [
+      "201",
+      "202",
+      "203"
+    ]
+  },
+  {
+    "id": "presidential",
+    "name": "Presidential Suite",
+    "pricePerNight": 420000,
+    "maxGuests": 4,
+    "description": "The pinnacle of luxury — panoramic views, a private balcony and butler service.",
+    "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=900&auto=format&fit=crop",
+    "status": "available",
+    "availableCount": 2,
+    "roomNumbers": [
+      "301",
+      "302"
+    ]
+  },
+  {
+    "id": "family",
+    "name": "Family Room",
+    "pricePerNight": 220000,
+    "maxGuests": 5,
+    "description": "Generous space for the whole family, with two queen beds and a sitting area.",
+    "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=900&auto=format&fit=crop",
+    "status": "available",
+    "availableCount": 3,
+    "roomNumbers": [
+      "401",
+      "402",
+      "403"
+    ]
+  }
+]
