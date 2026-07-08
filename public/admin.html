@@ -145,6 +145,7 @@
       </div>
     </div>
 
+    <script src="/js/paymentUtils.js"></script>
     <script>
       const loginView = document.getElementById('loginView');
       const dashboardView = document.getElementById('dashboardView');
@@ -315,7 +316,7 @@
                     <td>${booking.fullName}<br><span class="muted">${booking.email}</span></td>
                     <td>${booking.roomType}</td>
                     <td>${booking.status}<br><span class="muted">${booking.paymentStatus || 'pending'}</span></td>
-                    <td>${new Date(booking.checkIn).toLocaleDateString()}<br><span class="muted">${booking.paymentMethod === 'none' ? 'Pay later' : booking.paymentMethod.replace(/_/g, ' ')}</span></td>
+                    <td>${new Date(booking.checkIn).toLocaleDateString()}<br><span class="muted">${formatPaymentMethodLabel(booking.paymentMethod)}</span></td>
                   </tr>
                 `).join('')}
               </tbody>

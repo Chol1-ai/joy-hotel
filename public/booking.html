@@ -1481,6 +1481,7 @@
       </footer>
     </div>
 
+    <script src="/js/paymentUtils.js"></script>
     <script>
       /* ---------- Fallback room catalogue (used if the API is unreachable) ---------- */
       const FALLBACK_ROOMS = [
@@ -1773,7 +1774,7 @@
         <div class="row"><span>Check-out</span><span>${new Date(booking.checkOut).toDateString()}</span></div>
         <div class="row"><span>Nights</span><span>${booking.nights}</span></div>
         <div class="row"><span>Total</span><span>${formatCurrency(booking.totalPrice)}</span></div>
-        <div class="row"><span>Payment</span><span>${booking.paymentMethod === "none" ? "Pay later" : booking.paymentMethod.replace(/_/g, " ")}</span></div>
+        <div class="row"><span>Payment</span><span>${formatPaymentMethodLabel(booking.paymentMethod)}</span></div>
     `;
 
         if (booking.paymentMethod && booking.paymentMethod !== "none") {
@@ -1884,6 +1885,7 @@
       }
     </script>
 
+    <script src="/js/paymentUtils.js"></script>
     <script>
       (function () {
         var btn = document.getElementById("hamburgerBtn");
