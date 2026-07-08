@@ -33,13 +33,20 @@
           document.getElementById('status').textContent = 'Please enter your phone number.';
           return;
         }
+        document.getElementById('status').textContent = 'Preparing mobile-money payment...';
         const response = await fetch(`/api/bookings/${code}/pay`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ paymentMethod: 'mobile_money', paymentReference: `MM-${Date.now()}` })
+          body: JSON.stringify({ paymentMethod: 'mobile_money', paymentReference: `MM-${Date.now()}`, phone, amount: Number(amount) })
         });
         const data = await response.json();
-        document.getElementById('status').textContent = response.ok ? `Payment received. Reference: ${data.booking.paymentReference}` : data.error || 'Payment failed.';
+        if (response.ok && data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+        } else if (response.ok) {
+          document.getElementById('status').textContent = `Payment received. Reference: ${data.booking.paymentReference}`;
+        } else {
+          document.getElementById('status').textContent = data.error || 'Payment failed.';
+        }
       }
     </script>
   </body>

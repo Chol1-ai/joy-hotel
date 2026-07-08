@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Booking = require("../models/Booking");
 const { loadRooms, saveRooms, reserveRoomNumber } = require("../lib/adminData");
+const { getPaymentProviderConfig, buildCheckoutUrl } = require("../lib/payments");
 
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -188,7 +189,7 @@ router.get("/lookup", async (req, res) => {
 // POST /api/bookings/:code/pay
 router.post("/:code/pay", async (req, res) => {
   try {
-    const { paymentMethod, paymentReference } = req.body || {};
+    const { paymentMethod, paymentReference, phone, amount } = req.body || {};
     const booking = await Booking.findOne({
       confirmationCode: req.params.code.trim().toUpperCase(),
     });
@@ -207,7 +208,16 @@ router.post("/:code/pay", async (req, res) => {
     booking.paidAt = new Date();
     await booking.save();
 
-    res.json({ booking });
+    const providerConfig = getPaymentProviderConfig();
+    const checkoutUrl = buildCheckoutUrl({
+      config: providerConfig,
+      booking,
+      paymentMethod: normalizedPaymentMethod,
+      phone,
+      amount,
+    });
+
+    res.json({ booking, checkoutUrl, provider: providerConfig.provider, configured: providerConfig.configured });
   } catch (err) {
     console.error("Error completing payment:", err);
     res.status(500).json({ error: "Something went wrong while processing payment." });
