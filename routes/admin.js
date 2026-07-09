@@ -80,7 +80,7 @@ router.get('/requests', requireAdmin, async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 }).lean();
     const contacts = await Contact.find().sort({ createdAt: -1 }).lean();
-    const notifications = loadNotifications();
+    const notifications = await loadNotifications();
     res.json({ bookings, contacts, notifications });
   } catch (error) {
     console.error('Error loading admin requests:', error);
@@ -88,13 +88,13 @@ router.get('/requests', requireAdmin, async (req, res) => {
   }
 });
 
-router.get('/rooms', requireAdmin, (req, res) => {
-  res.json({ rooms: loadRooms() });
+router.get('/rooms', requireAdmin, async (req, res) => {
+  res.json({ rooms: await loadRooms() });
 });
 
-router.put('/rooms/:id', requireAdmin, (req, res) => {
+router.put('/rooms/:id', requireAdmin, async (req, res) => {
   try {
-    const rooms = loadRooms();
+    const rooms = await loadRooms();
     const room = rooms.find((item) => item.id === req.params.id);
     if (!room) {
       return res.status(404).json({ error: 'Room not found.' });
@@ -116,7 +116,7 @@ router.put('/rooms/:id', requireAdmin, (req, res) => {
         .filter(Boolean);
     }
 
-    saveRooms(rooms);
+    await saveRooms(rooms);
     res.json({ room });
   } catch (error) {
     console.error('Error updating room:', error);
@@ -124,11 +124,11 @@ router.put('/rooms/:id', requireAdmin, (req, res) => {
   }
 });
 
-router.get('/gallery', requireAdmin, (req, res) => {
-  res.json({ gallery: loadGallery() });
+router.get('/gallery', requireAdmin, async (req, res) => {
+  res.json({ gallery: await loadGallery() });
 });
 
-router.put('/gallery/:id', requireAdmin, (req, res) => {
+router.put('/gallery/:id', requireAdmin, async (req, res) => {
   try {
     const items = loadGallery();
     const item = items.find((entry) => entry.id === req.params.id);
@@ -141,7 +141,7 @@ router.put('/gallery/:id', requireAdmin, (req, res) => {
     item.category = req.body.category || item.category;
     item.imageUrl = req.body.imageUrl || item.imageUrl;
 
-    saveGallery(items);
+    await saveGallery(items);
     res.json({ item });
   } catch (error) {
     console.error('Error updating gallery item:', error);
@@ -149,7 +149,7 @@ router.put('/gallery/:id', requireAdmin, (req, res) => {
   }
 });
 
-router.delete('/gallery/:id', requireAdmin, (req, res) => {
+router.delete('/gallery/:id', requireAdmin, async (req, res) => {
   try {
     const items = loadGallery();
     const nextItems = items.filter((entry) => entry.id !== req.params.id);
@@ -157,7 +157,7 @@ router.delete('/gallery/:id', requireAdmin, (req, res) => {
       return res.status(404).json({ error: 'Gallery item not found.' });
     }
 
-    saveGallery(nextItems);
+    await saveGallery(nextItems);
     res.json({ message: 'Gallery item deleted.' });
   } catch (error) {
     console.error('Error deleting gallery item:', error);

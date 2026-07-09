@@ -43,19 +43,19 @@ app.use((err, req, res, next) => {
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/contact', contactRoutes);
 
-app.get('/api/gallery', (req, res) => {
+app.get('/api/gallery', async (req, res) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
     Pragma: 'no-cache',
     Expires: '0',
   });
-  res.json({ gallery: loadGallery() });
+  res.json({ gallery: await loadGallery() });
 });
 
-app.post('/api/notifications/email-click', (req, res) => {
+app.post('/api/notifications/email-click', async (req, res) => {
   try {
     const email = req.body?.email || req.query?.email || 'joyhotel@gmail.com';
-    addNotification('footer_email_click', { email });
+    await addNotification('footer_email_click', { email });
     console.log(`📧 Footer email link clicked: ${email}`);
     res.json({ message: 'Notification recorded.' });
   } catch (error) {

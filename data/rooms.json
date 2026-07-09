@@ -29,7 +29,7 @@
     "description": "A spacious suite with a separate lounge, workspace and premium amenities.",
     "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=900&auto=format&fit=crop",
     "status": "available",
-    "availableCount": 15,
+    "availableCount": 10,
     "roomNumbers": [
       "201",
       "202",
@@ -40,12 +40,7 @@
       "207",
       "208",
       "209",
-      "210",
-      "211",
-      "212",
-      "213",
-      "214",
-      "215"
+      "210"
     ]
   },
   {

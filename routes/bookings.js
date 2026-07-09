@@ -19,13 +19,13 @@ function nightsBetween(checkIn, checkOut) {
 }
 
 // GET /api/bookings/rooms — room catalogue for the booking page
-router.get("/rooms", (req, res) => {
+router.get("/rooms", async (req, res) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
     Pragma: 'no-cache',
     Expires: '0',
   });
-  res.json({ rooms: loadRooms() });
+  res.json({ rooms: await loadRooms() });
 });
 
 // POST /api/bookings — create a new reservation
@@ -64,7 +64,7 @@ router.post("/", async (req, res) => {
         .json({ error: "Please fill in all required fields." });
     }
 
-    const availableRooms = loadRooms();
+    const availableRooms = await loadRooms();
     const rooms = selectedRoomNames
       .map((name) => availableRooms.find((r) => r.name === name))
       .filter(Boolean);
@@ -125,7 +125,7 @@ router.post("/", async (req, res) => {
       roomInventory[roomIndex] = nextRoom;
     }
 
-    saveRooms(roomInventory);
+    await saveRooms(roomInventory);
 
     const totalRoomPrice = rooms.reduce(
       (sum, room) => sum + room.pricePerNight,
