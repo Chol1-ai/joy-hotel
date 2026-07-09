@@ -20,6 +20,11 @@ function nightsBetween(checkIn, checkOut) {
 
 // GET /api/bookings/rooms — room catalogue for the booking page
 router.get("/rooms", (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    Pragma: 'no-cache',
+    Expires: '0',
+  });
   res.json({ rooms: loadRooms() });
 });
 

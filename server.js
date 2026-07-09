@@ -44,6 +44,11 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/contact', contactRoutes);
 
 app.get('/api/gallery', (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    Pragma: 'no-cache',
+    Expires: '0',
+  });
   res.json({ gallery: loadGallery() });
 });
 
