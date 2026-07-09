@@ -54,7 +54,7 @@ app.get('/api/gallery', async (req, res) => {
 
 app.post('/api/notifications/email-click', async (req, res) => {
   try {
-    const email = req.body?.email || req.query?.email || 'joyhotel@gmail.com';
+    const email = req.body?.email || req.query?.email || 'joyhotel33@gmail.com';
     await addNotification('footer_email_click', { email });
     console.log(`📧 Footer email link clicked: ${email}`);
     res.json({ message: 'Notification recorded.' });

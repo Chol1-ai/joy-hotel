@@ -3,6 +3,7 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const { loadRooms, saveRooms, reserveRoomNumber } = require("../lib/adminData");
 const { getPaymentProviderConfig, buildCheckoutUrl } = require("../lib/payments");
+const { sendBookingConfirmation, sendPaymentConfirmation } = require("../lib/mail");
 
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -155,6 +156,11 @@ router.post("/", async (req, res) => {
       paymentStatus: normalizedPaymentMethod === "none" ? "pending" : "pending",
     });
 
+    // Send booking confirmation email (async, don't wait)
+    sendBookingConfirmation(booking).catch((err) => {
+      console.error('Failed to send booking confirmation email:', err.message);
+    });
+
     res.status(201).json({ booking });
   } catch (err) {
     console.error("Error creating booking:", err);
@@ -212,6 +218,11 @@ router.post("/:code/pay", async (req, res) => {
     booking.paymentReference = (paymentReference || "").trim() || `${normalizedPaymentMethod.toUpperCase()}-${Date.now()}`;
     booking.paidAt = new Date();
     await booking.save();
+
+    // Send payment confirmation email (async, don't wait)
+    sendPaymentConfirmation(booking).catch((err) => {
+      console.error('Failed to send payment confirmation email:', err.message);
+    });
 
     const providerConfig = getPaymentProviderConfig();
     const checkoutUrl = buildCheckoutUrl({

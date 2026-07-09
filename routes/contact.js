@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Contact = require('../models/Contact');
+const { sendContactReply } = require('../lib/mail');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,6 +26,11 @@ router.post('/', async (req, res) => {
       phone: (phone || '').trim(),
       subject: (subject || 'General Enquiry').trim(),
       message: message.trim(),
+    });
+
+    // Send auto-reply and notification emails (async, don't wait)
+    sendContactReply(contact).catch((err) => {
+      console.error('Failed to send contact reply emails:', err.message);
     });
 
     res.status(201).json({
