@@ -78,6 +78,17 @@
       }
       .pill.available { background: #e8f7ed; color: var(--success); }
       .pill.full { background: #fff1df; color: var(--warning); }
+      .status-banner {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fffdf8;
+        color: var(--dark);
+        display: none;
+      }
+      .status-banner.success { border-color: #9dd4b2; background: #f3fcf6; color: var(--success); }
+      .status-banner.error { border-color: #e2a59f; background: #fff5f4; color: #a7423b; }
       .login { max-width: 480px; margin: 80px auto; }
       .login-form { display: grid; gap: 12px; }
       .hidden { display: none !important; }
@@ -112,6 +123,7 @@
       </div>
 
       <div id="dashboardView" class="hidden">
+        <div id="statusBanner" class="status-banner"></div>
         <div class="grid" id="statsGrid"></div>
 
         <div class="card">
@@ -158,6 +170,7 @@
       const bookingsList = document.getElementById('bookingsList');
       const contactsList = document.getElementById('contactsList');
       const notificationsList = document.getElementById('notificationsList');
+      const statusBanner = document.getElementById('statusBanner');
 
       let rooms = [];
       let gallery = [];
@@ -198,6 +211,18 @@
         loginView.classList.add('hidden');
         dashboardView.classList.remove('hidden');
         logoutBtn.classList.remove('hidden');
+      }
+
+      function showStatus(message, type = 'success') {
+        statusBanner.textContent = message;
+        statusBanner.className = `status-banner ${type}`;
+        statusBanner.style.display = 'block';
+      }
+
+      function hideStatus() {
+        statusBanner.textContent = '';
+        statusBanner.className = 'status-banner';
+        statusBanner.style.display = 'none';
       }
 
       function renderStats() {
@@ -403,6 +428,7 @@
             body: JSON.stringify({ pricePerNight: Number(price), status, availableCount: Number(availableCount), roomNumbers }),
           });
           localStorage.setItem('joyhotel:inventory-updated', String(Date.now()));
+          showStatus('Room updated successfully. The public website is refreshing now.', 'success');
           await loadData();
         }
 
@@ -420,6 +446,7 @@
             body: JSON.stringify(payload),
           });
           localStorage.setItem('joyhotel:gallery-updated', String(Date.now()));
+          showStatus('Gallery item updated successfully. The public website is refreshing now.', 'success');
           await loadData();
         }
 
@@ -427,6 +454,7 @@
           const itemId = target.getAttribute('data-delete-gallery');
           await request(`/api/admin/gallery/${itemId}`, { method: 'DELETE' });
           localStorage.setItem('joyhotel:gallery-updated', String(Date.now()));
+          showStatus('Gallery item deleted successfully. The public website is refreshing now.', 'success');
           await loadData();
         }
       });
