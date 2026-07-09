@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Booking = require("../models/Booking");
-const { loadRooms, saveRooms, reserveRoomNumber } = require("../lib/adminData");
+const { loadRooms, saveRooms, reserveRoomNumber, allocateRoomNumberForBooking } = require("../lib/adminData");
 const { getPaymentProviderConfig, buildCheckoutUrl } = require("../lib/payments");
 const { sendBookingConfirmation, sendBookingNotification, sendPaymentConfirmation } = require("../lib/mail");
 
@@ -21,12 +21,51 @@ function nightsBetween(checkIn, checkOut) {
 
 // GET /api/bookings/rooms — room catalogue for the booking page
 router.get("/rooms", async (req, res) => {
-  res.set({
-    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-    Pragma: 'no-cache',
-    Expires: '0',
-  });
-  res.json({ rooms: await loadRooms() });
+  try {
+    const { checkIn, checkOut } = req.query;
+    const rooms = await loadRooms();
+    const bookings = await Booking.find({ status: 'confirmed' }).lean();
+
+    const normalizedCheckIn = checkIn ? new Date(checkIn) : null;
+    const normalizedCheckOut = checkOut ? new Date(checkOut) : null;
+
+    const availableRooms = rooms.map((room) => {
+      if (!normalizedCheckIn || !normalizedCheckOut || Number.isNaN(normalizedCheckIn.getTime()) || Number.isNaN(normalizedCheckOut.getTime())) {
+        return room;
+      }
+
+      const hasOverlap = bookings.some((booking) => {
+        if (!booking?.checkIn || !booking?.checkOut) {
+          return false;
+        }
+
+        const bookingCheckIn = new Date(booking.checkIn);
+        const bookingCheckOut = new Date(booking.checkOut);
+        const overlaps = bookingCheckIn < normalizedCheckOut && bookingCheckOut > normalizedCheckIn;
+        const roomMatches = (booking.roomTypes || []).some((roomType) => roomType === room.name) ||
+          (booking.assignedRoomNumbers || []).some((assigned) => String(assigned).includes(room.name));
+
+        return overlaps && roomMatches;
+      });
+
+      return {
+        ...room,
+        availableCount: hasOverlap ? 0 : room.availableCount,
+        roomNumbers: hasOverlap ? [] : room.roomNumbers,
+        status: hasOverlap ? 'full' : room.status,
+      };
+    });
+
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
+    res.json({ rooms: availableRooms });
+  } catch (error) {
+    console.error('Error loading room availability:', error);
+    res.status(500).json({ error: 'Could not load room availability.' });
+  }
 });
 
 // POST /api/bookings — create a new reservation
