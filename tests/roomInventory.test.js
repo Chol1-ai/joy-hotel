@@ -30,3 +30,15 @@ test('reserveRoomNumber removes one room number and lowers availability', () => 
   assert.deepEqual(result.room.roomNumbers, ['102']);
   assert.equal(result.room.status, 'available');
 });
+
+test('normalizeRoom expands room numbers when availability is raised without explicit room numbers', () => {
+  const room = normalizeRoom({
+    id: 'executive',
+    name: 'Executive Suite',
+    availableCount: 4,
+    roomNumbers: [],
+  });
+
+  assert.equal(room.availableCount, 4);
+  assert.deepEqual(room.roomNumbers, ['201', '202', '203', '204']);
+});

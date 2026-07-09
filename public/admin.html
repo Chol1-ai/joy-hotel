@@ -402,6 +402,7 @@
             method: 'PUT',
             body: JSON.stringify({ pricePerNight: Number(price), status, availableCount: Number(availableCount), roomNumbers }),
           });
+          localStorage.setItem('joyhotel:inventory-updated', String(Date.now()));
           await loadData();
         }
 
@@ -418,12 +419,14 @@
             method: 'PUT',
             body: JSON.stringify(payload),
           });
+          localStorage.setItem('joyhotel:gallery-updated', String(Date.now()));
           await loadData();
         }
 
         if (target.matches('[data-delete-gallery]')) {
           const itemId = target.getAttribute('data-delete-gallery');
           await request(`/api/admin/gallery/${itemId}`, { method: 'DELETE' });
+          localStorage.setItem('joyhotel:gallery-updated', String(Date.now()));
           await loadData();
         }
       });

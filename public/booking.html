@@ -1597,7 +1597,7 @@
 
       async function loadRooms() {
         try {
-          const res = await fetch("/api/bookings/rooms");
+          const res = await fetch("/api/bookings/rooms", { cache: "no-store" });
           if (!res.ok) throw new Error("bad response");
           const data = await res.json();
           ROOMS = data.rooms && data.rooms.length ? data.rooms : FALLBACK_ROOMS;
@@ -1607,6 +1607,19 @@
         renderRooms();
       }
       loadRooms();
+      const refreshRooms = () => loadRooms();
+      window.addEventListener("focus", refreshRooms);
+      window.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          refreshRooms();
+        }
+      });
+      window.addEventListener("storage", (event) => {
+        if (event.key === "joyhotel:inventory-updated") {
+          refreshRooms();
+        }
+      });
+      setInterval(refreshRooms, 15000);
 
       function nightsBetween(inDate, outDate) {
         const oneDay = 1000 * 60 * 60 * 24;

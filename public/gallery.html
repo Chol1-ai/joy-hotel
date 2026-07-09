@@ -992,7 +992,7 @@ function renderGalleryItems(items) {
 
 async function loadGalleryItems() {
     try {
-        const response = await fetch('/api/gallery');
+        const response = await fetch('/api/gallery', { cache: 'no-store' });
         const data = await response.json();
         if (data.gallery && data.gallery.length) {
             renderGalleryItems(data.gallery);
@@ -1004,6 +1004,20 @@ async function loadGalleryItems() {
         renderGalleryItems([]);
     }
 }
+
+const refreshGallery = () => loadGalleryItems();
+window.addEventListener('focus', refreshGallery);
+window.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        refreshGallery();
+    }
+});
+window.addEventListener('storage', (event) => {
+    if (event.key === 'joyhotel:gallery-updated') {
+        refreshGallery();
+    }
+});
+setInterval(refreshGallery, 15000);
 
 function applyFilter(filterValue) {
     const galleryItems = document.querySelectorAll('.gallery-item');
