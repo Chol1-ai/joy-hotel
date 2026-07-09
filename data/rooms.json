@@ -7,7 +7,7 @@
     "description": "Elegant comfort with a king bed, city views and a marble bathroom.",
     "image": "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=900&auto=format&fit=crop",
     "status": "available",
-    "availableCount": 40,
+    "availableCount": 15,
     "roomNumbers": [
       "401",
       "402",
@@ -23,32 +23,7 @@
       "412",
       "413",
       "414",
-      "415",
-      "416",
-      "417",
-      "418",
-      "419",
-      "420",
-      "421",
-      "422",
-      "423",
-      "424",
-      "425",
-      "426",
-      "427",
-      "428",
-      "429",
-      "430",
-      "431",
-      "432",
-      "433",
-      "434",
-      "435",
-      "436",
-      "437",
-      "438",
-      "439",
-      "440"
+      "415"
     ]
   },
   {
@@ -59,13 +34,18 @@
     "description": "A spacious suite with a separate lounge, workspace and premium amenities.",
     "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=900&auto=format&fit=crop",
     "status": "available",
-    "availableCount": 5,
+    "availableCount": 10,
     "roomNumbers": [
       "201",
       "202",
       "203",
       "204",
-      "205"
+      "205",
+      "206",
+      "207",
+      "208",
+      "209",
+      "210"
     ]
   },
   {
@@ -76,18 +56,13 @@
     "description": "The pinnacle of luxury — panoramic views, a private balcony and butler service.",
     "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=900&auto=format&fit=crop",
     "status": "available",
-    "availableCount": 10,
+    "availableCount": 5,
     "roomNumbers": [
       "301",
       "302",
       "303",
       "304",
-      "305",
-      "306",
-      "307",
-      "308",
-      "309",
-      "310"
+      "305"
     ]
   },
   {
@@ -98,18 +73,13 @@
     "description": "Generous space for the whole family, with two queen beds and a sitting area.",
     "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=900&auto=format&fit=crop",
     "status": "available",
-    "availableCount": 10,
+    "availableCount": 5,
     "roomNumbers": [
       "401",
       "402",
       "403",
       "404",
-      "405",
-      "406",
-      "407",
-      "408",
-      "409",
-      "410"
+      "405"
     ]
   }
 ]
