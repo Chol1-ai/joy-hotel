@@ -41,6 +41,45 @@
       }
       .topbar h1 { margin: 0; font-size: 28px; }
       .topbar p { margin: 4px 0 0; color: #6a655d; }
+      .topbar-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .notification-bell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: var(--light);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 20px;
+        transition: background 0.2s ease;
+      }
+      .notification-bell:hover {
+        background: #e8ddc9;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        border: 2px solid white;
+      }
+      .notification-badge.hidden { display: none; }
       .btn {
         border: none;
         border-radius: 999px;
@@ -101,6 +140,7 @@
       @media (max-width: 768px) {
         .container { padding: 12px; }
         .topbar { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+        .topbar-actions { width: 100%; justify-content: flex-start; }
         .topbar h1 { font-size: 20px; }
         .topbar p { font-size: 12px; }
         .card { padding: 16px; margin-bottom: 16px; }
@@ -124,6 +164,10 @@
       @media (max-width: 480px) {
         .container { padding: 8px; }
         .card { padding: 12px; margin-bottom: 12px; border-radius: 8px; }
+        .topbar { width: 100%; }
+        .topbar-actions { width: 100%; justify-content: space-between; }
+        .notification-bell { width: 36px; height: 36px; font-size: 18px; }
+        .notification-badge { width: 20px; height: 20px; font-size: 10px; }
         .topbar h1 { font-size: 18px; }
         .topbar p { font-size: 11px; }
         .grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
@@ -155,7 +199,13 @@
           <h1>Joy Hotel Admin Dashboard</h1>
           <p>Manage prices, room availability, gallery items and guest requests.</p>
         </div>
-        <button id="logoutBtn" class="btn btn-secondary hidden">Logout</button>
+        <div class="topbar-actions">
+          <button id="notificationBellBtn" class="notification-bell" title="View notifications">
+            🔔
+            <span id="notificationBadge" class="notification-badge hidden">0</span>
+          </button>
+          <button id="logoutBtn" class="btn btn-secondary hidden">Logout</button>
+        </div>
       </div>
 
       <div id="loginView" class="card login">
@@ -223,6 +273,8 @@
       const statusBanner = document.getElementById('statusBanner');
       const passwordInput = document.getElementById('passwordInput');
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+      const notificationBellBtn = document.getElementById('notificationBellBtn');
+      const notificationBadge = document.getElementById('notificationBadge');
 
       let rooms = [];
       let gallery = [];
@@ -382,6 +434,7 @@
       function renderNotifications() {
         if (!notifications.length) {
           notificationsList.innerHTML = '<div class="empty">No notifications yet.</div>';
+          updateNotificationBadge();
           return;
         }
 
@@ -392,6 +445,16 @@
             <p class="muted">${new Date(item.createdAt).toLocaleString()}</p>
           </div>
         `).join('');
+        updateNotificationBadge();
+      }
+
+      function updateNotificationBadge() {
+        if (notifications.length > 0) {
+          notificationBadge.textContent = notifications.length > 99 ? '99+' : notifications.length;
+          notificationBadge.classList.remove('hidden');
+        } else {
+          notificationBadge.classList.add('hidden');
+        }
       }
 
       function renderRequests() {
@@ -467,6 +530,14 @@
           showDashboard();
         } catch (error) {
           loginMessage.textContent = error.message;
+        }
+      });
+
+      notificationBellBtn.addEventListener('click', () => {
+        // Scroll to notifications card
+        const cards = document.querySelectorAll('.card');
+        if (cards.length >= 4) {
+          cards[3].scrollIntoView({ behavior: 'smooth' });
         }
       });
 
