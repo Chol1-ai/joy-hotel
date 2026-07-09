@@ -1597,7 +1597,7 @@
 
       async function loadRooms() {
         try {
-          const res = await fetch("/api/bookings/rooms?ts=" + Date.now(), { cache: "no-store" });
+          const res = await fetch("/api/bookings/rooms?ts=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
           if (!res.ok) throw new Error("bad response");
           const data = await res.json();
           ROOMS = data.rooms && data.rooms.length ? data.rooms : FALLBACK_ROOMS;
@@ -1608,6 +1608,7 @@
         updateSummary();
       }
       loadRooms();
+      window.addEventListener("pageshow", () => loadRooms());
       const refreshRooms = () => loadRooms();
       window.addEventListener("focus", refreshRooms);
       window.addEventListener("visibilitychange", () => {
