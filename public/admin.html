@@ -212,6 +212,92 @@
       .table { width: 100%; border-collapse: collapse; font-size: 14px; }
       .table th, .table td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
       .table th { color: #745f42; }
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+        pointer-events: none;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid;
+        animation: slideIn 0.3s ease-out;
+        pointer-events: auto;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+      .toast.removing {
+        animation: slideOut 0.3s ease-out forwards;
+      }
+      .toast-success {
+        border-left-color: var(--success);
+        color: var(--success);
+      }
+      .toast-success::before {
+        content: '✓';
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .toast-error {
+        border-left-color: #e74c3c;
+        color: #a7423b;
+      }
+      .toast-error::before {
+        content: '✕';
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .toast-warning {
+        border-left-color: var(--warning);
+        color: #c97a12;
+      }
+      .toast-warning::before {
+        content: '⚠';
+        font-size: 16px;
+      }
+      @media (max-width: 480px) {
+        .toast-container {
+          top: 10px;
+          right: 10px;
+          left: 10px;
+          max-width: none;
+        }
+        .toast {
+          padding: 12px 14px;
+          font-size: 13px;
+        }
+      }
       @media (max-width: 768px) {
         .container { padding: 12px; }
         .topbar { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
@@ -299,8 +385,9 @@
         <p id="loginMessage" class="muted"></p>
       </div>
 
+      <div id="toastContainer" class="toast-container"></div>
+
       <div id="dashboardView" class="hidden">
-        <div id="statusBanner" class="status-banner"></div>
         <div class="grid" id="statsGrid"></div>
 
         <div class="card">
@@ -347,11 +434,11 @@
       const bookingsList = document.getElementById('bookingsList');
       const contactsList = document.getElementById('contactsList');
       const notificationsList = document.getElementById('notificationsList');
-      const statusBanner = document.getElementById('statusBanner');
       const passwordInput = document.getElementById('passwordInput');
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');
       const notificationBellBtn = document.getElementById('notificationBellBtn');
       const notificationBadge = document.getElementById('notificationBadge');
+      const toastContainer = document.getElementById('toastContainer');
 
       let rooms = [];
       let gallery = [];
@@ -409,15 +496,31 @@
       }
 
       function showStatus(message, type = 'success') {
-        statusBanner.textContent = message;
-        statusBanner.className = `status-banner ${type}`;
-        statusBanner.style.display = 'block';
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        // Auto-dismiss after 4 seconds
+        const dismissTimeout = setTimeout(() => {
+          toast.classList.add('removing');
+          setTimeout(() => {
+            toast.remove();
+          }, 300);
+        }, 4000);
+
+        // Allow manual dismiss on click
+        toast.addEventListener('click', () => {
+          clearTimeout(dismissTimeout);
+          toast.classList.add('removing');
+          setTimeout(() => {
+            toast.remove();
+          }, 300);
+        });
       }
 
       function hideStatus() {
-        statusBanner.textContent = '';
-        statusBanner.className = 'status-banner';
-        statusBanner.style.display = 'none';
+        // No longer needed, but keep for compatibility
       }
 
       function renderStats() {
