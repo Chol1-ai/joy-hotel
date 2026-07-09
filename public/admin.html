@@ -116,7 +116,10 @@
         <p class="muted">Use the credentials configured on the server to continue.</p>
         <form id="loginForm" class="login-form">
           <input name="username" placeholder="Admin username" required />
-          <input name="password" type="password" placeholder="Admin password" required />
+          <div style="position: relative;">
+            <input id="passwordInput" name="password" type="password" placeholder="Admin password" required />
+            <button type="button" id="togglePasswordBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #b58b3a; font-size: 18px; padding: 4px;">👁️</button>
+          </div>
           <button class="btn btn-primary" type="submit">Sign in</button>
         </form>
         <p id="loginMessage" class="muted"></p>
@@ -171,12 +174,28 @@
       const contactsList = document.getElementById('contactsList');
       const notificationsList = document.getElementById('notificationsList');
       const statusBanner = document.getElementById('statusBanner');
+      const passwordInput = document.getElementById('passwordInput');
+      const togglePasswordBtn = document.getElementById('togglePasswordBtn');
 
       let rooms = [];
       let gallery = [];
       let bookings = [];
       let contacts = [];
       let notifications = [];
+
+      // Toggle password visibility
+      if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            togglePasswordBtn.textContent = '🙈';
+          } else {
+            passwordInput.type = 'password';
+            togglePasswordBtn.textContent = '👁️';
+          }
+        });
+      }
 
       async function request(path, options = {}) {
         const response = await fetch(path, {
