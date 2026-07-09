@@ -719,6 +719,9 @@
         if (cards.length >= 4) {
           cards[3].scrollIntoView({ behavior: 'smooth' });
         }
+        // Clear notifications and hide badge
+        notifications = [];
+        renderNotifications();
       });
 
       logoutBtn.addEventListener('click', async () => {
