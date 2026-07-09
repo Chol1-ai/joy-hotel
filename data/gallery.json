@@ -1,16 +1,135 @@
 [
   {
+    "id": "room-1",
+    "title": "Deluxe Suite",
+    "category": "rooms",
+    "description": "A refined bedroom retreat with premium finishes and panoramic views.",
+    "imageUrl": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "room-2",
+    "title": "Executive Room",
+    "category": "rooms",
+    "description": "Elegant workspace and lounge area for business travelers.",
+    "imageUrl": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "room-3",
+    "title": "Royal Bedroom",
+    "category": "rooms",
+    "description": "Luxurious comfort with soft lighting and bespoke interiors.",
+    "imageUrl": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "room-4",
+    "title": "Family Apartment",
+    "category": "rooms",
+    "description": "Spacious family living with relaxed comfort and privacy.",
+    "imageUrl": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
     "id": "dining-1",
     "title": "Main Restaurant",
     "category": "dining",
-    "description": "Elegant dining with international cuisine",
+    "description": "Elegant dining with international cuisine and candlelit ambience.",
     "imageUrl": "https://images.unsplash.com/photo-1753727471014-efe38840c7c7?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "dining-2",
+    "title": "Breakfast Terrace",
+    "category": "dining",
+    "description": "A bright morning setting filled with fresh flavors and sunrise views.",
+    "imageUrl": "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "dining-3",
+    "title": "Chef’s Table",
+    "category": "dining",
+    "description": "A curated culinary experience with seasonal signature dishes.",
+    "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "dining-4",
+    "title": "Poolside Bar",
+    "category": "dining",
+    "description": "Refreshing drinks and light bites by the water.",
+    "imageUrl": "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop"
   },
   {
     "id": "spa-1",
     "title": "Spa & Wellness",
     "category": "spa",
-    "description": "Rejuvenating treatments and relaxation",
+    "description": "Rejuvenating treatments and a calming wellness experience.",
     "imageUrl": "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "spa-2",
+    "title": "Massage Suite",
+    "category": "spa",
+    "description": "A serene setting designed for total relaxation and restoration.",
+    "imageUrl": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "spa-3",
+    "title": "Sauna & Steam",
+    "category": "spa",
+    "description": "Luxury wellness rituals with heat, calm and comfort.",
+    "imageUrl": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "events-1",
+    "title": "Garden Event",
+    "category": "events",
+    "description": "Elegant outdoor celebrations under the evening lights.",
+    "imageUrl": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "events-2",
+    "title": "Ballroom Reception",
+    "category": "events",
+    "description": "Grand celebrations with refined decor, lighting and music.",
+    "imageUrl": "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "events-3",
+    "title": "Conference Setup",
+    "category": "events",
+    "description": "Professional meetings and executive gatherings with style.",
+    "imageUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "events-4",
+    "title": "Wedding Celebration",
+    "category": "events",
+    "description": "Romantic celebrations designed to leave lasting memories.",
+    "imageUrl": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "facilities-1",
+    "title": "Infinity Pool",
+    "category": "facilities",
+    "description": "A serene poolside retreat with skyline views and luxury comfort.",
+    "imageUrl": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "facilities-2",
+    "title": "Lobby Lounge",
+    "category": "facilities",
+    "description": "Relax in style with a warm and welcoming atmosphere.",
+    "imageUrl": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "facilities-3",
+    "title": "Sunset Deck",
+    "category": "facilities",
+    "description": "A peaceful rooftop experience for evening relaxation.",
+    "imageUrl": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "id": "facilities-4",
+    "title": "Fitness Center",
+    "category": "facilities",
+    "description": "Modern equipment and wellness facilities for every guest.",
+    "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop"
   }
 ]
