@@ -470,6 +470,18 @@
         box-shadow: 0 18px 40px rgba(181, 139, 58, 0.3);
       }
 
+      .room-card.unavailable {
+        opacity: 0.7;
+        cursor: not-allowed;
+        border-color: #e2d7c8;
+        box-shadow: none;
+      }
+
+      .room-card.unavailable:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
       .room-img {
         height: 130px;
         overflow: hidden;
@@ -515,6 +527,25 @@
         font-size: 11px;
         font-weight: 400;
         color: #8f7d68;
+      }
+
+      .room-meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11px;
+        color: #8f7d68;
+        margin-top: 10px;
+      }
+
+      .room-availability {
+        font-weight: 700;
+        color: var(--gold);
+      }
+
+      .room-card.unavailable .room-availability {
+        color: #b24a3a;
       }
 
       .room-check {
@@ -1539,8 +1570,10 @@
 
       function renderRooms() {
         roomsGrid.innerHTML = ROOMS.map(
-          (room) => `
-        <div class="room-card ${selectedRooms.includes(room.name) ? "selected" : ""}" data-id="${room.id}">
+          (room) => {
+            const isUnavailable = room.status === "full" || (room.availableCount ?? 0) <= 0;
+            return `
+        <div class="room-card ${selectedRooms.includes(room.name) ? "selected" : ""} ${isUnavailable ? "unavailable" : ""}" data-id="${room.id}">
             <div class="room-img"><img src="${room.image}" alt="${room.name}"></div>
             <div class="room-body">
                 <h3>${room.name}</h3>
@@ -1550,21 +1583,25 @@
                     <div class="room-check"><i class="fa-solid fa-check"></i></div>
                 </div>
                 <div class="room-meta">
-                  <span>${room.availableCount ?? 0} available</span>
+                  <span class="room-availability">${isUnavailable ? "Unavailable" : `${room.availableCount ?? 0} available`}</span>
                   <span>Rooms: ${(room.roomNumbers || []).join(', ')}</span>
                 </div>
             </div>
         </div>
-    `,
+    `;
+          },
         ).join("");
 
         roomOptions.innerHTML = ROOMS.map(
-          (room) => `
+          (room) => {
+            const isUnavailable = room.status === "full" || (room.availableCount ?? 0) <= 0;
+            return `
           <label class="room-option">
-            <input type="checkbox" value="${room.name}" ${selectedRooms.includes(room.name) ? "checked" : ""} />
-            <span>${room.name}</span>
+            <input type="checkbox" value="${room.name}" ${selectedRooms.includes(room.name) ? "checked" : ""} ${isUnavailable ? "disabled" : ""} />
+            <span>${room.name}${isUnavailable ? " (Unavailable)" : ""}</span>
           </label>
-        `,
+        `;
+          },
         ).join("");
 
         roomOptions
@@ -1582,6 +1619,8 @@
 
         document.querySelectorAll(".room-card").forEach((card) => {
           card.addEventListener("click", () => {
+            if (card.classList.contains("unavailable")) return;
+
             const roomName = ROOMS.find((r) => r.id === card.dataset.id)?.name;
             if (!roomName) return;
 
@@ -1597,7 +1636,11 @@
 
       async function loadRooms() {
         try {
-          const res = await fetch("/api/bookings/rooms?ts=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const params = new URLSearchParams({ ts: String(Date.now()) });
+          if (checkInInput.value) params.set("checkIn", checkInInput.value);
+          if (checkOutInput.value) params.set("checkOut", checkOutInput.value);
+
+          const res = await fetch(`/api/bookings/rooms?${params.toString()}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
           if (!res.ok) throw new Error("bad response");
           const data = await res.json();
           ROOMS = data.rooms && data.rooms.length ? data.rooms : FALLBACK_ROOMS;
@@ -1607,8 +1650,6 @@
         renderRooms();
         updateSummary();
       }
-      loadRooms();
-      window.addEventListener("pageshow", () => loadRooms());
       const refreshRooms = () => loadRooms();
       window.addEventListener("focus", refreshRooms);
       window.addEventListener("visibilitychange", () => {
@@ -1690,9 +1731,14 @@
         if (new Date(checkOutInput.value) <= new Date(checkInInput.value)) {
           checkOutInput.value = minOut.toISOString().split("T")[0];
         }
-        updateSummary();
+        loadRooms();
       });
-      checkOutInput.addEventListener("change", updateSummary);
+      checkOutInput.addEventListener("change", () => {
+        updateSummary();
+        loadRooms();
+      });
+
+      loadRooms();
 
       /* ---------- Tabs ---------- */
       document.querySelectorAll(".tab-btn").forEach((btn) => {
