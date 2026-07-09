@@ -643,7 +643,7 @@
         } else {
           bookingsList.innerHTML = `
             <table class="table">
-              <thead><tr><th>Guest</th><th>Room</th><th>Status</th><th>Check-in</th></tr></thead>
+              <thead><tr><th>Guest</th><th>Room</th><th>Status</th><th>Check-in</th><th>Special Requests</th></tr></thead>
               <tbody>
                 ${bookings.map((booking) => `
                   <tr>
@@ -651,6 +651,7 @@
                     <td>${booking.roomType}</td>
                     <td>${booking.status}<br><span class="muted">${booking.paymentStatus || 'pending'}</span></td>
                     <td>${new Date(booking.checkIn).toLocaleDateString()}<br><span class="muted">${formatPaymentMethodLabel(booking.paymentMethod)}</span></td>
+                    <td>${booking.specialRequests || '<span class="muted">None</span>'}</td>
                   </tr>
                 `).join('')}
               </tbody>
