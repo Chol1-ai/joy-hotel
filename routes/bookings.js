@@ -3,7 +3,7 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const { loadRooms, saveRooms, reserveRoomNumber } = require("../lib/adminData");
 const { getPaymentProviderConfig, buildCheckoutUrl } = require("../lib/payments");
-const { sendBookingConfirmation, sendPaymentConfirmation } = require("../lib/mail");
+const { sendBookingConfirmation, sendBookingNotification, sendPaymentConfirmation } = require("../lib/mail");
 
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -159,6 +159,11 @@ router.post("/", async (req, res) => {
     // Send booking confirmation email (async, don't wait)
     sendBookingConfirmation(booking).catch((err) => {
       console.error('Failed to send booking confirmation email:', err.message);
+    });
+
+    // Send admin notification email (async, don't wait)
+    sendBookingNotification(booking).catch((err) => {
+      console.error('Failed to send booking notification email:', err.message);
     });
 
     res.status(201).json({ booking });
