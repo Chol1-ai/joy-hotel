@@ -115,12 +115,85 @@ router.put('/rooms/:id', requireAdmin, async (req, res) => {
         .map((value) => value.trim())
         .filter(Boolean);
     }
+    if (req.body.name !== undefined) {
+      room.name = String(req.body.name).trim();
+    }
+    if (req.body.maxGuests !== undefined) {
+      room.maxGuests = Math.max(1, Number(req.body.maxGuests));
+    }
+    if (req.body.description !== undefined) {
+      room.description = String(req.body.description);
+    }
+    if (req.body.image !== undefined) {
+      room.image = String(req.body.image);
+    }
 
     await saveRooms(rooms);
     res.json({ room });
   } catch (error) {
     console.error('Error updating room:', error);
     res.status(500).json({ error: 'Could not update room.' });
+  }
+});
+
+function normalizeRoomId(id) {
+  return String(id || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-_]/g, '');
+}
+
+router.post('/rooms', requireAdmin, async (req, res) => {
+  try {
+    const rooms = await loadRooms();
+    const rawId = String(req.body.id || '').trim();
+    const id = normalizeRoomId(rawId);
+
+    if (!id) {
+      return res.status(400).json({ error: 'A valid room id is required.' });
+    }
+    if (rooms.some((item) => item.id === id)) {
+      return res.status(409).json({ error: 'A room with that id already exists.' });
+    }
+
+    const newRoom = {
+      id,
+      name: String(req.body.name || '').trim() || 'New Room',
+      pricePerNight: Math.max(0, Number(req.body.pricePerNight) || 0),
+      maxGuests: Math.max(1, Number(req.body.maxGuests) || 1),
+      description: String(req.body.description || '').trim(),
+      image: String(req.body.image || '').trim() || 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=900&auto=format&fit=crop',
+      status: String(req.body.status || 'available') === 'full' ? 'full' : 'available',
+      availableCount: Math.max(0, Number(req.body.availableCount) || 0),
+      roomNumbers: String(req.body.roomNumbers || '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean),
+    };
+
+    rooms.push(newRoom);
+    await saveRooms(rooms);
+    res.status(201).json({ room: newRoom });
+  } catch (error) {
+    console.error('Error creating room:', error);
+    res.status(500).json({ error: 'Could not create room.' });
+  }
+});
+
+router.delete('/rooms/:id', requireAdmin, async (req, res) => {
+  try {
+    const rooms = await loadRooms();
+    const nextRooms = rooms.filter((item) => item.id !== req.params.id);
+    if (nextRooms.length === rooms.length) {
+      return res.status(404).json({ error: 'Room not found.' });
+    }
+
+    await saveRooms(nextRooms);
+    res.json({ message: 'Room deleted.' });
+  } catch (error) {
+    console.error('Error deleting room:', error);
+    res.status(500).json({ error: 'Could not delete room.' });
   }
 });
 

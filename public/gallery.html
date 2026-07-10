@@ -967,18 +967,21 @@ const galleryGrid = document.getElementById('galleryGrid');
 
 function renderGalleryItems(items) {
     if (!galleryGrid) return;
-    galleryGrid.innerHTML = items.map((item) => `
+    galleryGrid.innerHTML = items.map((item) => {
+        const title = item.title || `${String(item.category || 'Gallery').replace(/-/g, ' ')} Image`;
+        return `
         <div class="gallery-item" data-category="${item.category}">
-            <img src="${item.imageUrl}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-fallback/1200/800';">
+            <img src="${item.imageUrl}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/joyhotel-fallback/1200/800';">
             <div class="gallery-badge">${String(item.category || 'gallery').toUpperCase()}</div>
             <div class="gallery-overlay">
                 <div class="gallery-info">
-                    <h3>${item.title}</h3>
+                    <h3>${title}</h3>
                     <p>${item.description || ''}</p>
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 async function loadGalleryItems() {

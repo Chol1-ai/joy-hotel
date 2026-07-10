@@ -535,12 +535,61 @@
       }
 
       function renderRooms() {
+        const newRoomForm = `
+          <div class="room-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <h4>Add New Room</h4>
+              <span class="pill available">New</span>
+            </div>
+            <label>
+              Room ID
+              <input type="text" data-new-field="id" placeholder="e.g. deluxe" />
+            </label>
+            <label>
+              Room Name
+              <input type="text" data-new-field="name" placeholder="Deluxe Room" />
+            </label>
+            <label>
+              Price per night
+              <input type="number" min="0" data-new-field="pricePerNight" placeholder="180000" />
+            </label>
+            <label>
+              Maximum guests
+              <input type="number" min="1" data-new-field="maxGuests" placeholder="2" />
+            </label>
+            <label>
+              Number of available rooms
+              <input type="number" min="0" data-new-field="availableCount" placeholder="4" />
+            </label>
+            <label>
+              Room numbers (comma separated)
+              <input type="text" data-new-field="roomNumbers" placeholder="101, 102, 103" />
+            </label>
+            <label>
+              Availability status
+              <select data-new-field="status">
+                <option value="available">Available</option>
+                <option value="full">Full</option>
+              </select>
+            </label>
+            <label>
+              Image URL
+              <input type="text" data-new-field="image" placeholder="https://..." />
+            </label>
+            <label>
+              Description
+              <textarea data-new-field="description" placeholder="Room description..."></textarea>
+            </label>
+            <button class="btn btn-primary" data-add-room>Add room</button>
+          </div>
+        `;
+
         if (!rooms.length) {
-          roomsPanel.innerHTML = '<div class="empty">No room data yet.</div>';
+          roomsPanel.innerHTML = newRoomForm;
           return;
         }
 
-        roomsPanel.innerHTML = rooms.map((room) => `
+        roomsPanel.innerHTML = newRoomForm + rooms.map((room) => `
           <div class="room-card">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
               <h4>${room.name}</h4>
@@ -566,7 +615,10 @@
                 <option value="full" ${room.status === 'full' ? 'selected' : ''}>Full</option>
               </select>
             </label>
-            <button class="btn btn-primary" data-save-room="${room.id}">Save room</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-primary" data-save-room="${room.id}">Save room</button>
+              <button class="btn btn-danger" data-delete-room="${room.id}">Delete</button>
+            </div>
           </div>
         `).join('');
       }
@@ -776,6 +828,36 @@
           await request(`/api/admin/gallery/${itemId}`, { method: 'DELETE' });
           localStorage.setItem('joyhotel:gallery-updated', String(Date.now()));
           showStatus('Gallery item deleted successfully. The public website is refreshing now.', 'success');
+          await loadData();
+        }
+
+        if (target.matches('[data-add-room]')) {
+          const card = target.closest('.room-card');
+          const payload = {
+            id: card.querySelector('[data-new-field="id"]').value,
+            name: card.querySelector('[data-new-field="name"]').value,
+            pricePerNight: card.querySelector('[data-new-field="pricePerNight"]').value,
+            maxGuests: card.querySelector('[data-new-field="maxGuests"]').value,
+            availableCount: card.querySelector('[data-new-field="availableCount"]').value,
+            roomNumbers: card.querySelector('[data-new-field="roomNumbers"]').value,
+            status: card.querySelector('[data-new-field="status"]').value,
+            image: card.querySelector('[data-new-field="image"]').value,
+            description: card.querySelector('[data-new-field="description"]').value,
+          };
+          await request('/api/admin/rooms', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          });
+          localStorage.setItem('joyhotel:inventory-updated', String(Date.now()));
+          showStatus('Room added successfully. The public website is refreshing now.', 'success');
+          await loadData();
+        }
+
+        if (target.matches('[data-delete-room]')) {
+          const roomId = target.getAttribute('data-delete-room');
+          await request(`/api/admin/rooms/${roomId}`, { method: 'DELETE' });
+          localStorage.setItem('joyhotel:inventory-updated', String(Date.now()));
+          showStatus('Room deleted successfully. The public website is refreshing now.', 'success');
           await loadData();
         }
       });

@@ -1596,6 +1596,17 @@
       const roomOptions = document.getElementById("roomOptions");
 
       function renderRooms() {
+        if (!roomsGrid || !roomOptions) {
+          console.error('Booking page room container not found.');
+          return;
+        }
+
+        if (!Array.isArray(ROOMS) || ROOMS.length === 0) {
+          roomsGrid.innerHTML = '<div class="no-rooms">No rooms available right now. Please refresh the page or choose different dates.</div>';
+          roomOptions.innerHTML = '';
+          return;
+        }
+
         roomsGrid.innerHTML = ROOMS.map(
           (room) => {
             const isUnavailable = room.status === "full" || (room.availableCount ?? 0) <= 0;
@@ -1668,10 +1679,12 @@
           if (checkOutInput.value) params.set("checkOut", checkOutInput.value);
 
           const res = await fetch(`/api/bookings/rooms?${params.toString()}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
-          if (!res.ok) throw new Error("bad response");
+          if (!res.ok) throw new Error(`bad response: ${res.status}`);
           const data = await res.json();
+          console.debug('booking rooms response', data);
           ROOMS = data.rooms && data.rooms.length ? data.rooms : FALLBACK_ROOMS;
         } catch (err) {
+          console.error('Failed to load booking rooms:', err);
           ROOMS = FALLBACK_ROOMS;
         }
         renderRooms();
