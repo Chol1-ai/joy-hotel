@@ -26,7 +26,14 @@
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code') || '';
       const amount = params.get('amount') || '';
-      document.getElementById('amount').value = Number(amount).toLocaleString('en-UG') + ' UGX';
+      const currency = params.get('currency') || 'UGX';
+      const fractionDigits = currency === 'UGX' || currency === 'JPY' ? 0 : 2;
+      document.getElementById('amount').value = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits,
+      }).format(Number(amount));
       async function completePayment() {
         const email = document.getElementById('email').value.trim();
         if (!email) {
@@ -37,7 +44,7 @@
         const response = await fetch(`/api/bookings/${code}/pay`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ paymentMethod: 'paypal', paymentReference: `PP-${Date.now()}`, email, amount: Number(amount) })
+          body: JSON.stringify({ paymentMethod: 'paypal', paymentReference: `PP-${Date.now()}`, email, amount: Number(amount), currency })
         });
         const data = await response.json();
         if (response.ok && data.checkoutUrl) {

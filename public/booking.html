@@ -952,8 +952,7 @@
         margin-bottom: 20px;
         font-weight: 600;
       }
-      footer p,
-      footer li {
+      footer p, footer li, footer a, footer span, footer small {
         line-height: 1.8;
         list-style: none;
         font-size: 13px;
@@ -1386,6 +1385,19 @@
                 <p class="muted" style="margin-top:6px;">Choose a payment option to continue to the provider checkout page.</p>
               </div>
 
+              <div class="field">
+                <label for="currency">Currency</label>
+                <select id="currency" name="currency">
+                  <option value="UGX">UGX — Ugandan Shilling</option>
+                  <option value="USD">USD — US Dollar</option>
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="GBP">GBP — British Pound</option>
+                  <option value="JPY">JPY — Japanese Yen</option>
+                  <option value="AUD">AUD — Australian Dollar</option>
+                </select>
+                <p class="muted" style="margin-top:6px;">Choose the currency you want to view and pay in.</p>
+              </div>
+
               <button type="submit" class="submit-btn" id="submitBtn">
                 <i class="fa-solid fa-calendar-check"></i>
                 <span>CONFIRM RESERVATION</span>
@@ -1594,8 +1606,29 @@
         },
       ];
 
-      function formatCurrency(amount) {
-        return `UGX ${Number(amount).toLocaleString("en-UG")}`;
+      const SUPPORTED_CURRENCIES = ["UGX", "USD", "EUR", "GBP", "JPY", "AUD"];
+      const CURRENCY_RATES_TO_UGX = {
+        UGX: 1,
+        USD: 3800,
+        EUR: 4100,
+        GBP: 4700,
+        JPY: 28,
+        AUD: 2500,
+      };
+
+      function convertPrice(amountInUGX, currency = "UGX") {
+        const rate = CURRENCY_RATES_TO_UGX[currency] || 1;
+        return rate === 0 ? amountInUGX : Number((amountInUGX / rate).toFixed(currency === "UGX" || currency === "JPY" ? 0 : 2));
+      }
+
+      function formatCurrency(amount, currency = "UGX") {
+        const fractionDigits = currency === "UGX" || currency === "JPY" ? 0 : 2;
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency,
+          minimumFractionDigits: fractionDigits,
+          maximumFractionDigits: fractionDigits,
+        }).format(Number(amount));
       }
 
       let ROOMS = [];
@@ -1607,6 +1640,7 @@
       const checkOutInput = document.getElementById("checkOut");
       const guestsSelect = document.getElementById("guests");
       const roomOptions = document.getElementById("roomOptions");
+      const currencySelect = document.getElementById("currency");
 
       function renderRooms() {
         if (!roomsGrid || !roomOptions) {
@@ -1725,6 +1759,7 @@
       function updateSummary() {
         const inVal = checkInInput.value;
         const outVal = checkOutInput.value;
+        const selectedCurrency = currencySelect?.value || "UGX";
 
         if (!selectedRooms.length) {
           summaryContent.innerHTML =
@@ -1735,15 +1770,17 @@
         const selectedRoomDetails = ROOMS.filter((room) =>
           selectedRooms.includes(room.name),
         );
-        const totalPrice = selectedRoomDetails.reduce(
+        const totalPriceUGX = selectedRoomDetails.reduce(
           (sum, room) => sum + room.pricePerNight,
           0,
         );
+        const displayedRate = convertPrice(selectedRoomDetails[0].pricePerNight, selectedCurrency);
+        const displayedTotal = convertPrice(totalPriceUGX, selectedCurrency);
 
         let html = `
         <div class="summary-row"><span>Rooms</span><span>${selectedRoomDetails.map((room) => room.name).join(", ")}</span></div>
         <div class="summary-row"><span>Room numbers</span><span>${selectedRoomDetails.map((room) => (room.roomNumbers || []).slice(0, 4).join(', ')).join(' | ')}</span></div>
-        <div class="summary-row"><span>Rate</span><span>${formatCurrency(selectedRoomDetails[0].pricePerNight)} / night each</span></div>
+        <div class="summary-row"><span>Rate</span><span>${formatCurrency(displayedRate, selectedCurrency)} / night each</span></div>
     `;
 
         if (inVal && outVal) {
@@ -1756,7 +1793,7 @@
                 <div class="summary-row"><span>Check-in</span><span>${inDate.toDateString()}</span></div>
                 <div class="summary-row"><span>Check-out</span><span>${outDate.toDateString()}</span></div>
                 <div class="summary-row"><span>Nights</span><span>${nights}</span></div>
-                <div class="summary-total"><span>Total</span><span>${formatCurrency(nights * totalPrice)}</span></div>
+                <div class="summary-total"><span>Total</span><span>${formatCurrency(convertPrice(nights * totalPriceUGX, selectedCurrency), selectedCurrency)}</span></div>
             `;
           } else {
             html += `<p class="summary-empty">Check-out must be after check-in.</p>`;
@@ -1789,6 +1826,10 @@
       checkOutInput.addEventListener("change", () => {
         updateSummary();
         loadRooms();
+      });
+
+      currencySelect?.addEventListener("change", () => {
+        updateSummary();
       });
 
       loadRooms();
@@ -1846,6 +1887,7 @@
             .getElementById("specialRequests")
             .value.trim(),
           paymentMethod: document.getElementById("paymentMethod").value,
+          currency: document.getElementById("currency").value,
         };
 
         if (!payload.fullName || !payload.email || !payload.phone) {
@@ -1898,11 +1940,12 @@
             : booking.paymentMethod === "paypal"
               ? "PayPal"
               : "Visa / Card";
+          const bookingCurrency = booking.currency || "UGX";
           paymentBox.innerHTML = `
             <div class="payment-card">
               <h4>Continue to ${providerName}</h4>
-              <p>Choose the provider checkout page to complete your stay payment for ${formatCurrency(booking.totalPrice)}.</p>
-              <a class="submit-btn" id="payNowBtn" href="/pay/${booking.paymentMethod}.html?code=${booking.confirmationCode}&amount=${booking.totalPrice}" style="display:inline-block; text-decoration:none;">PAY WITH ${providerName.toUpperCase()}</a>
+              <p>Choose the provider checkout page to complete your stay payment for ${formatCurrency(booking.totalPrice, bookingCurrency)}.</p>
+              <a class="submit-btn" id="payNowBtn" href="/pay/${booking.paymentMethod}.html?code=${booking.confirmationCode}&amount=${booking.totalPrice}&currency=${bookingCurrency}" style="display:inline-block; text-decoration:none;">PAY WITH ${providerName.toUpperCase()}</a>
             </div>
           `;
         } else {

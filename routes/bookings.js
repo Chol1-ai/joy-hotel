@@ -5,6 +5,15 @@ const { loadRooms, saveRooms, reserveRoomNumber, allocateRoomNumberForBooking } 
 const { getPaymentProviderConfig, buildCheckoutUrl } = require("../lib/payments");
 const { sendBookingConfirmation, sendBookingNotification, sendPaymentConfirmation } = require("../lib/mail");
 
+const CURRENCY_RATES_TO_UGX = {
+  UGX: 1,
+  USD: 3800,
+  EUR: 4100,
+  GBP: 4700,
+  JPY: 28,
+  AUD: 2500,
+};
+
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "JOY-";
@@ -81,6 +90,7 @@ router.post("/", async (req, res) => {
       guests,
       specialRequests,
       paymentMethod,
+      currency,
     } = req.body;
 
     const selectedRoomNames = Array.isArray(roomType)
@@ -176,6 +186,17 @@ router.post("/", async (req, res) => {
       ? paymentMethod
       : "none";
 
+    const normalizedCurrency = ["UGX", "USD", "EUR", "GBP", "JPY", "AUD"].includes(currency)
+      ? currency
+      : "UGX";
+    const currencyRate = CURRENCY_RATES_TO_UGX[normalizedCurrency] || 1;
+    const perNightAmount = normalizedCurrency === "UGX"
+      ? totalRoomPrice
+      : Number((totalRoomPrice / currencyRate).toFixed(normalizedCurrency === "JPY" ? 0 : 2));
+    const totalAmount = normalizedCurrency === "UGX"
+      ? Number((nights * totalRoomPrice).toFixed(0))
+      : Number(((nights * totalRoomPrice) / currencyRate).toFixed(normalizedCurrency === "JPY" ? 0 : 2));
+
     const booking = await Booking.create({
       confirmationCode,
       fullName,
@@ -189,10 +210,11 @@ router.post("/", async (req, res) => {
       guests: guestCount,
       specialRequests: specialRequests || "",
       nights,
-      pricePerNight: totalRoomPrice,
-      totalPrice: nights * totalRoomPrice,
+      pricePerNight: perNightAmount,
+      totalPrice: totalAmount,
       paymentMethod: normalizedPaymentMethod,
       paymentStatus: normalizedPaymentMethod === "none" ? "pending" : "pending",
+      currency: normalizedCurrency,
     });
 
     // Send booking confirmation email (async, don't wait)
@@ -244,7 +266,7 @@ router.get("/lookup", async (req, res) => {
 // POST /api/bookings/:code/pay
 router.post("/:code/pay", async (req, res) => {
   try {
-    const { paymentMethod, paymentReference, phone, amount } = req.body || {};
+    const { paymentMethod, paymentReference, phone, amount, currency } = req.body || {};
     const booking = await Booking.findOne({
       confirmationCode: req.params.code.trim().toUpperCase(),
     });
@@ -257,7 +279,12 @@ router.post("/:code/pay", async (req, res) => {
       ? paymentMethod
       : "mobile_money";
 
+    const normalizedCurrency = ["UGX", "USD", "EUR", "GBP", "JPY", "AUD"].includes(currency)
+      ? currency
+      : booking.currency || "UGX";
+
     booking.paymentMethod = normalizedPaymentMethod;
+    booking.currency = normalizedCurrency;
     booking.paymentStatus = "paid";
     booking.paymentReference = (paymentReference || "").trim() || `${normalizedPaymentMethod.toUpperCase()}-${Date.now()}`;
     booking.paidAt = new Date();
@@ -275,6 +302,7 @@ router.post("/:code/pay", async (req, res) => {
       paymentMethod: normalizedPaymentMethod,
       phone,
       amount,
+      currency: normalizedCurrency,
     });
 
     res.json({ booking, checkoutUrl, provider: providerConfig.provider, configured: providerConfig.configured });

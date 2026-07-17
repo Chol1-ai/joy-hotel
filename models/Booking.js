@@ -33,6 +33,11 @@ const bookingSchema = new mongoose.Schema(
       enum: ["mobile_money", "paypal", "visa", "none"],
       default: "none",
     },
+    currency: {
+      type: String,
+      enum: ["UGX", "USD", "EUR", "GBP", "JPY", "AUD"],
+      default: "UGX",
+    },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],
